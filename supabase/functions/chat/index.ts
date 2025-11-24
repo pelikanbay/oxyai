@@ -97,11 +97,20 @@ Răspunde în limba română. You communicate in a professional, technical tone 
 
     if (!response.ok) {
       if (response.status === 429) {
+        const retryAfter = response.headers.get('retry-after') || '60';
+        console.error("Rate limit hit, retry after:", retryAfter);
         return new Response(
-          JSON.stringify({ error: "Rate limit depășit. Te rog încearcă din nou în câteva momente." }), 
+          JSON.stringify({ 
+            error: "Prea multe cereri. Te rog așteaptă 30-60 secunde și încearcă din nou.",
+            retryAfter: parseInt(retryAfter)
+          }), 
           {
             status: 429,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            headers: { 
+              ...corsHeaders, 
+              "Content-Type": "application/json",
+              "Retry-After": retryAfter
+            },
           }
         );
       }
