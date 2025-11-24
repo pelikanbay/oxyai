@@ -50,21 +50,29 @@ const Header = ({ onMenuClick, onLogoClick }: HeaderProps) => {
   const handleLogout = async () => {
     try {
       console.log('Attempting logout...');
+      
+      // Clear everything first
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Then sign out from Supabase
       const { error } = await supabase.auth.signOut();
+      
       if (error) {
         console.error('Logout error:', error);
-        toast.error(`Eroare la deconectare: ${error.message}`);
-      } else {
-        console.log('Logout successful');
-        toast.success("Deconectat cu succes!");
-        // Clear local storage as backup
-        localStorage.clear();
-        // Force reload to reset state
-        window.location.href = '/';
       }
+      
+      console.log('Logout successful');
+      toast.success("Deconectat cu succes!");
+      
+      // Force a complete reload
+      window.location.href = '/';
     } catch (error: any) {
       console.error('Logout exception:', error);
-      toast.error(`Eroare: ${error.message}`);
+      // Even if there's an error, clear everything and reload
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = '/';
     }
   };
 

@@ -16,12 +16,27 @@ export const Auth = () => {
     setLoading(true);
 
     try {
+      // Clear any previous corrupted session
+      await supabase.auth.signOut();
+      localStorage.clear();
+
       if (isLogin) {
         console.log('Attempting login for:', email);
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        const { data, error } = await supabase.auth.signInWithPassword({ 
+          email, 
+          password 
+        });
+        
+        if (error) {
+          console.error('Login error:', error);
+          throw error;
+        }
+        
         console.log('Login successful:', data.user?.email);
         toast.success("Autentificare reușită!");
+        
+        // Force reload to ensure clean state
+        setTimeout(() => window.location.reload(), 500);
       } else {
         console.log('Attempting signup for:', email);
         const redirectUrl = `${window.location.origin}/`;
@@ -32,13 +47,31 @@ export const Auth = () => {
             emailRedirectTo: redirectUrl
           }
         });
-        if (error) throw error;
+        
+        if (error) {
+          console.error('Signup error:', error);
+          throw error;
+        }
+        
         console.log('Signup successful:', data.user?.email);
-        toast.success("Cont creat cu succes!");
+        toast.success("Cont creat! Verifică-ți emailul pentru confirmare.");
       }
     } catch (error: any) {
       console.error('Auth error:', error);
-      toast.error(error.message || "Eroare la autentificare");
+      
+      // Provide more specific error messages
+      let errorMessage = "Eroare la autentificare";
+      if (error.message?.includes('Invalid login credentials')) {
+        errorMessage = "Email sau parolă incorectă";
+      } else if (error.message?.includes('Email not confirmed')) {
+        errorMessage = "Te rugăm să confirmi emailul înainte de autentificare";
+      } else if (error.message?.includes('User already registered')) {
+        errorMessage = "Acest email este deja înregistrat. Încearcă să te autentifici.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
