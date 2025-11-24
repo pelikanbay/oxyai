@@ -6,6 +6,7 @@ import { Loader2, Upload, X, Send, Image as ImageIcon, Mic, MicOff, Volume2 } fr
 import { useToast } from "@/hooks/use-toast";
 import { useVoiceMode } from "@/hooks/useVoiceMode";
 import { useModelSettings } from "@/hooks/useModelSettings";
+import { useUsageTracking } from "@/hooks/useUsageTracking";
 import ChatMessage from "./ChatMessage";
 import VoiceIndicator from "./VoiceIndicator";
 import ModelSelector from "./ModelSelector";
@@ -56,6 +57,9 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
     },
     autoSend: true,
   });
+
+  // Usage tracking hook
+  const { canSendMessage, incrementUsage } = useUsageTracking();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -160,6 +164,16 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
       toast({
         title: "Eroare",
         description: "Trebuie să fii autentificat pentru a folosi această funcție",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check usage limit (skip in Ghost Mode)
+    if (!isGhostMode && !canSendMessage()) {
+      toast({
+        title: "Limită atinsă",
+        description: "Ai atins limita de mesaje pentru acest month. Upgrade la Premium pentru mesaje nelimitate!",
         variant: "destructive",
       });
       return;
@@ -335,6 +349,9 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
             )
           );
         }
+
+        // Increment usage stats
+        await incrementUsage();
       } else {
         // Ghost Mode: just update the temp message with final content
         setMessages(prev => 
