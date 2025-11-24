@@ -65,11 +65,11 @@ const Header = ({ onMenuClick }: HeaderProps) => {
         </div>
         <nav className="flex items-center gap-6">
           <div className="hidden md:flex items-center gap-6">
-            <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
-              Funcționalități
-            </a>
             <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
               Cum Funcționează
+            </a>
+            <a href="#monetization" className="text-muted-foreground hover:text-foreground transition-colors">
+              Monetizare
             </a>
           </div>
           
