@@ -2,13 +2,10 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import HowItWorks from "@/components/HowItWorks";
-import Monetization from "@/components/Monetization";
 import Footer from "@/components/Footer";
 import { Auth } from "@/components/Auth";
 import { ConversationHistory } from "@/components/ConversationHistory";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
-import AdSpace from "@/components/AdSpace";
 import { UsageTracker } from "@/components/UsageTracker";
 import {
   Sheet,
@@ -83,7 +80,7 @@ const Index = () => {
       </Sheet>
 
       <div className="flex h-[calc(100vh-4rem)]">
-        {/* Desktop Sidebar - visible only on large screens */}
+        {/* Desktop Sidebar */}
         <aside className="hidden lg:block w-80 border-r border-border bg-card/50 overflow-y-auto">
           <ConversationHistory
             onSelectConversation={handleSelectConversation}
@@ -92,23 +89,12 @@ const Index = () => {
           />
         </aside>
         
-        {/* Main content */}
+        {/* Main Chat Area */}
         <main className="flex-1 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto">
-            <Hero 
-              conversationId={currentConversationId}
-              onConversationCreated={setCurrentConversationId}
-            />
-            
-            {/* Show content sections only when no conversation is active */}
-            {!currentConversationId && (
-              <>
-                <AdSpace id="after-hero-ad" />
-                <HowItWorks />
-                <Monetization />
-              </>
-            )}
-          </div>
+          <Hero 
+            conversationId={currentConversationId}
+            onConversationCreated={setCurrentConversationId}
+          />
         </main>
       </div>
       <Footer />
