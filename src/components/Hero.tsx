@@ -1,17 +1,58 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Sparkles, Loader2 } from "lucide-react";
+import { Sparkles, Loader2, Upload, X, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const Hero = () => {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
   const { toast } = useToast();
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFiles(prev => [...prev, ...Array.from(e.target.files!)]);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files) {
+      setFiles(prev => [...prev, ...Array.from(e.dataTransfer.files)]);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const removeFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const readFileAsBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = reader.result as string;
+        resolve(base64.split(',')[1]);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleGenerate = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() && files.length === 0) return;
     
     setIsLoading(true);
     setOutput("");
@@ -19,13 +60,25 @@ const Hero = () => {
     try {
       const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
       
+      const filesData = await Promise.all(
+        files.map(async (file) => ({
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          content: await readFileAsBase64(file)
+        }))
+      );
+      
       const resp = await fetch(CHAT_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ 
+          message: input,
+          files: filesData 
+        }),
       });
 
       if (!resp.ok) {
@@ -150,9 +203,74 @@ const Hero = () => {
               />
             </div>
 
+            {/* File Upload Area */}
+            <div
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              className={`relative border-2 border-dashed rounded-xl p-8 transition-all ${
+                isDragging 
+                  ? 'border-primary bg-primary/5' 
+                  : 'border-border bg-background hover:border-primary/50'
+              }`}
+            >
+              <input
+                type="file"
+                id="file-upload"
+                multiple
+                onChange={handleFileChange}
+                className="hidden"
+              />
+              <label
+                htmlFor="file-upload"
+                className="flex flex-col items-center justify-center cursor-pointer"
+              >
+                <Upload className="w-10 h-10 text-primary mb-3" />
+                <p className="text-sm font-medium mb-1">
+                  Trage fișiere aici sau click pentru a încărca
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Orice tip de fișier, fără limită de mărime
+                </p>
+              </label>
+            </div>
+
+            {/* Files List */}
+            {files.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Fișiere încărcate ({files.length})</p>
+                <div className="space-y-2">
+                  {files.map((file, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 bg-muted rounded-lg border border-border group hover:border-primary/50 transition-all"
+                    >
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <FileText className="w-5 h-5 text-primary flex-shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium truncate">{file.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {(file.size / 1024).toFixed(2)} KB
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeFile(index)}
+                        className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <Button 
               onClick={handleGenerate}
-              disabled={isLoading || !input.trim()}
+              disabled={isLoading || (!input.trim() && files.length === 0)}
               className="w-full bg-gradient-primary hover:opacity-90 text-primary-foreground font-semibold py-6 text-lg shadow-glow transition-all"
             >
               {isLoading ? (

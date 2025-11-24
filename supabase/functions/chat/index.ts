@@ -9,7 +9,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { message } = await req.json();
+    const { message, files } = await req.json();
     const OPENROUTER_API_KEY = Deno.env.get("OPENROUTER_API_KEY");
     
     if (!OPENROUTER_API_KEY) {
@@ -17,6 +17,13 @@ serve(async (req) => {
     }
 
     console.log("Received message:", message);
+    console.log("Received files:", files?.length || 0);
+
+    let userMessage = message;
+    if (files && files.length > 0) {
+      const filesList = files.map((f: any) => `- ${f.name} (${f.type}, ${(f.size / 1024).toFixed(2)} KB)`).join('\n');
+      userMessage += `\n\nFișiere atașate:\n${filesList}\n\nConținutul fișierelor (base64): ${JSON.stringify(files.map((f: any) => ({ name: f.name, content: f.content.substring(0, 100) + '...' })))}`;
+    }
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
@@ -31,9 +38,9 @@ serve(async (req) => {
         messages: [
           { 
             role: "system", 
-            content: "Ești OxyAI, un asistent AI specializat în IT și cybersecurity. Oferă răspunsuri clare, practice și detaliate în limba română. Concentrează-te pe soluții concrete și best practices din industrie. Când ești întrebat cine te-a creat sau cine te-a făcut, răspunde: 'Am fost creat de Kent.'" 
+            content: "Ești OxyAI, un asistent AI specializat în IT și cybersecurity. Oferă răspunsuri clare, practice și detaliate în limba română. Concentrează-te pe soluții concrete și best practices din industrie. Când ești întrebat cine te-a creat sau cine te-a făcut, răspunde: 'Am fost creat de Kent.' Când primești fișiere, analizează-le și oferă informații relevante despre conținutul lor." 
           },
-          { role: "user", content: message },
+          { role: "user", content: userMessage },
         ],
         stream: true,
       }),
