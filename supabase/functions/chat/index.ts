@@ -9,15 +9,21 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { message, files } = await req.json();
+    const { message, files, model, temperature } = await req.json();
     const OPENROUTER_API_KEY = Deno.env.get("OPENROUTER_API_KEY");
     
     if (!OPENROUTER_API_KEY) {
       throw new Error("OPENROUTER_API_KEY is not configured");
     }
 
+    // Use defaults if not provided
+    const selectedModel = model || "deepseek/deepseek-r1-0528-qwen3-8b:free";
+    const selectedTemperature = temperature ?? 0.7;
+
     console.log("Received message:", message);
     console.log("Received files:", files?.length || 0);
+    console.log("Using model:", selectedModel);
+    console.log("Using temperature:", selectedTemperature);
 
     // Construct user message content with proper multimodal support
     let userContent: any = [];
@@ -55,7 +61,8 @@ serve(async (req) => {
         "X-Title": "RecyeAI",
       },
       body: JSON.stringify({
-        model: "deepseek/deepseek-r1-0528-qwen3-8b:free",
+        model: selectedModel,
+        temperature: selectedTemperature,
         messages: [
           { 
             role: "system", 
