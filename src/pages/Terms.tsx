@@ -14,7 +14,7 @@ const Terms = () => {
           <section>
             <h2 className="text-2xl font-semibold text-foreground mb-4">1. Acceptarea Termenilor</h2>
             <p>
-              Prin accesarea și utilizarea platformei OxyAI, acceptați să respectați acești termeni și condiții. 
+              Prin accesarea și utilizarea platformei RecyeAI, acceptați să respectați acești termeni și condiții. 
               Dacă nu sunteți de acord cu aceștia, vă rugăm să nu utilizați serviciile noastre.
             </p>
           </section>
@@ -22,11 +22,12 @@ const Terms = () => {
           <section>
             <h2 className="text-2xl font-semibold text-foreground mb-4">2. Descrierea Serviciului</h2>
             <p>
-              OxyAI este un instrument bazat pe inteligență artificială care oferă:
+              RecyeAI este un AI assistant specializat în cybersecurity care oferă:
             </p>
             <ul className="list-disc pl-6 space-y-2">
-              <li>Răspunsuri instant la întrebări despre IT și Cybersecurity</li>
-              <li>Analiza fișierelor și documente</li>
+              <li>Asistență pentru penetration testing și security assessments</li>
+              <li>Suport pentru red teaming și adversary simulation</li>
+              <li>Educație în ethical hacking și vulnerability research</li>
               <li>Salvarea și gestionarea conversațiilor</li>
               <li>Servicii gratuite și premium</li>
             </ul>
@@ -48,21 +49,24 @@ const Terms = () => {
           <section>
             <h2 className="text-2xl font-semibold text-foreground mb-4">4. Utilizare Acceptabilă</h2>
             <p>
-              Sunteți de acord să NU utilizați serviciul pentru:
+              RecyeAI este destinat exclusiv pentru scopuri educaționale și etice. Sunteți de acord să NU utilizați serviciul pentru:
             </p>
             <ul className="list-disc pl-6 space-y-2">
-              <li>Activități ilegale sau care încalcă drepturile altora</li>
+              <li>Activități ilegale sau atacuri neautorizate asupra sistemelor</li>
+              <li>Activități de hacking fără autorizare scrisă prealabilă</li>
               <li>Transmiterea de malware, virusi sau cod malițios</li>
-              <li>Hărțuire, spam sau phishing</li>
-              <li>Încercări de acces neautorizat la sistem</li>
-              <li>Generarea de conținut care încalcă drepturile de autor</li>
+              <li>Încercări de acces neautorizat la sisteme sau rețele</li>
+              <li>Orice activitate care încalcă legile privind securitatea informatică</li>
             </ul>
+            <p className="mt-4 font-semibold text-foreground">
+              IMPORTANT: Utilizați RecyeAI doar pentru teste autorizate, educație și scopuri defensive.
+            </p>
           </section>
 
           <section>
             <h2 className="text-2xl font-semibold text-foreground mb-4">5. Proprietate Intelectuală</h2>
             <p>
-              Tot conținutul platformei OxyAI, inclusiv design, logo, și tehnologie, este proprietatea noastră 
+              Tot conținutul platformei RecyeAI, inclusiv design, logo, și tehnologie, este proprietatea noastră 
               și este protejat de legile drepturilor de autor. Conținutul generat de AI aparține utilizatorului, 
               dar ne rezervăm dreptul de a-l utiliza pentru îmbunătățirea serviciilor.
             </p>
@@ -71,11 +75,12 @@ const Terms = () => {
           <section>
             <h2 className="text-2xl font-semibold text-foreground mb-4">6. Servicii Premium și Plăți</h2>
             <p>
-              Oferim atât servicii gratuite, cât și premium:
+              RecyeAI oferă atât servicii gratuite, cât și premium:
             </p>
             <ul className="list-disc pl-6 space-y-2">
-              <li>Planul gratuit include 10 cereri pe zi</li>
-              <li>Planurile premium oferă acces nelimitat și funcții avansate</li>
+              <li>Planul gratuit FREE - acces la funcționalități de bază</li>
+              <li>Planul PRO - funcții avansate și prioritate (în curând)</li>
+              <li>Planul OPS - acces complet și suport premium (în curând)</li>
               <li>Plățile se procesează securizat prin Stripe</li>
               <li>Rambursările sunt disponibile în primele 14 zile</li>
             </ul>
@@ -84,15 +89,15 @@ const Terms = () => {
           <section>
             <h2 className="text-2xl font-semibold text-foreground mb-4">7. Limitări de Răspundere</h2>
             <p>
-              OxyAI furnizează servicii "așa cum sunt". Nu garantăm:
+              RecyeAI furnizează servicii "așa cum sunt". Nu garantăm:
             </p>
             <ul className="list-disc pl-6 space-y-2">
               <li>Acuratețea completă a răspunsurilor AI</li>
               <li>Disponibilitatea neîntreruptă a serviciului</li>
-              <li>Absența erorilor sau virusurilor</li>
+              <li>Absența erorilor sau bug-urilor</li>
             </ul>
             <p className="mt-4">
-              Nu suntem responsabili pentru decizii luate pe baza informațiilor furnizate de AI.
+              Nu suntem responsabili pentru utilizarea necorespunzătoare a informațiilor furnizate. Utilizați informațiile doar în scopuri legale și etice.
             </p>
           </section>
 
@@ -129,8 +134,8 @@ const Terms = () => {
             <h2 className="text-2xl font-semibold text-foreground mb-4">11. Contact</h2>
             <p>
               Pentru întrebări despre acești termeni, contactează-ne la:{" "}
-              <a href="mailto:contact@oxyai.com" className="text-primary hover:underline">
-                contact@oxyai.com
+              <a href="mailto:contact@recyeai.com" className="text-primary hover:underline">
+                contact@recyeai.com
               </a>
             </p>
           </section>

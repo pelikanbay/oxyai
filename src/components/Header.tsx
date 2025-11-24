@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Sparkles, User, LogOut, Menu, Settings } from "lucide-react";
+import { User, LogOut, Menu, Settings, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import recyeaiLogo from "@/assets/recyeai-logo.png";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -92,14 +93,19 @@ const Header = ({ onMenuClick, onLogoClick }: HeaderProps) => {
           )}
           <button 
             onClick={handleLogoClick} 
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity group"
           >
-            <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center shadow-glow">
-              <Sparkles className="w-6 h-6 text-primary-foreground" />
+            <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center shadow-glow transition-all duration-300 group-hover:shadow-glow-accent">
+              <img src={recyeaiLogo} alt="RecyeAI" className="w-7 h-7" />
             </div>
-            <span className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              OxyAI
-            </span>
+            <div className="flex flex-col">
+              <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                RecyeAI
+              </span>
+              <span className="text-[10px] text-muted-foreground -mt-1 tracking-wider">
+                OFFENSIVE INTELLIGENCE
+              </span>
+            </div>
           </button>
         </div>
         <nav className="flex items-center gap-6">

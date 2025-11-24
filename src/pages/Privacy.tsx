@@ -14,7 +14,7 @@ const Privacy = () => {
           <section>
             <h2 className="text-2xl font-semibold text-foreground mb-4">1. Informații Colectate</h2>
             <p>
-              OxyAI colectează următoarele tipuri de informații:
+              RecyeAI colectează următoarele tipuri de informații:
             </p>
             <ul className="list-disc pl-6 space-y-2">
               <li>Informații de cont: email, parolă (criptată)</li>
@@ -108,8 +108,8 @@ const Privacy = () => {
             <h2 className="text-2xl font-semibold text-foreground mb-4">9. Contact</h2>
             <p>
               Pentru întrebări despre această politică de confidențialitate, contactează-ne la:{" "}
-              <a href="mailto:contact@oxyai.com" className="text-primary hover:underline">
-                contact@oxyai.com
+              <a href="mailto:contact@recyeai.com" className="text-primary hover:underline">
+                contact@recyeai.com
               </a>
             </p>
           </section>

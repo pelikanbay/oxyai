@@ -288,10 +288,10 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated }:
               <ImageIcon className="w-8 h-8 md:w-10 md:h-10 text-primary-foreground" />
             </div>
             <h2 className="text-2xl md:text-3xl font-bold mb-2">
-              Bine ai venit la <span className="bg-gradient-primary bg-clip-text text-transparent">OxyAI</span>
+              Bine ai venit la <span className="bg-gradient-primary bg-clip-text text-transparent">RecyeAI</span>
             </h2>
             <p className="text-muted-foreground max-w-md">
-              Asistentul tău AI universal. Analizează imagini, generează cod, rezolvă probleme, creează conținut și mult mai mult!
+              AI assistant specializat în penetration testing, red teaming și ethical hacking. Offensive Intelligence, Simplified.
             </p>
           </div>
         ) : (
