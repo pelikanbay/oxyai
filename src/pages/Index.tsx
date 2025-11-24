@@ -7,6 +7,7 @@ import { Auth } from "@/components/Auth";
 import { ConversationHistory } from "@/components/ConversationHistory";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
 import { UsageTracker } from "@/components/UsageTracker";
+import { useGhostMode } from "@/hooks/useGhostMode";
 import {
   Sheet,
   SheetContent,
@@ -20,6 +21,7 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentConversationId, setCurrentConversationId] = useState<string | undefined>();
+  const { isGhostMode, toggleGhostMode } = useGhostMode();
 
   useEffect(() => {
     // Clear any corrupted auth data on mount
@@ -87,6 +89,8 @@ const Index = () => {
       <Header 
         onMenuClick={() => setMobileMenuOpen(true)} 
         onLogoClick={handleNewConversation}
+        isGhostMode={isGhostMode}
+        onToggleGhostMode={toggleGhostMode}
       />
       
       {/* Mobile Drawer */}
@@ -121,6 +125,7 @@ const Index = () => {
           <Hero 
             conversationId={currentConversationId}
             onConversationCreated={setCurrentConversationId}
+            isGhostMode={isGhostMode}
           />
         </main>
       </div>

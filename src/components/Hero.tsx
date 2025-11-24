@@ -14,14 +14,16 @@ interface Message {
   content: string;
   files?: any;
   created_at: string;
+  conversation_id?: string;
 }
 
 interface HeroProps {
   conversationId?: string;
   onConversationCreated?: (id: string) => void;
+  isGhostMode?: boolean;
 }
 
-const Hero = ({ conversationId: externalConversationId, onConversationCreated }: HeroProps) => {
+const Hero = ({ conversationId: externalConversationId, onConversationCreated, isGhostMode = false }: HeroProps) => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
@@ -65,7 +67,10 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated }:
   useEffect(() => {
     if (externalConversationId) {
       setConversationId(externalConversationId);
-      loadConversationMessages(externalConversationId);
+      // Only load from DB if not a ghost conversation
+      if (!externalConversationId.startsWith('ghost-')) {
+        loadConversationMessages(externalConversationId);
+      }
     } else {
       setConversationId(null);
       setMessages([]);
@@ -73,6 +78,28 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated }:
       setFiles([]);
     }
   }, [externalConversationId]);
+
+  // Clear messages when Ghost Mode is disabled
+  useEffect(() => {
+    if (!isGhostMode && conversationId?.startsWith('ghost-')) {
+      setMessages([]);
+      setConversationId(null);
+      toast({
+        title: "Ghost Mode dezactivat",
+        description: "Conversația temporară a fost ștearsă.",
+      });
+    }
+  }, [isGhostMode, conversationId, toast]);
+
+  // Clear ghost messages on unmount
+  useEffect(() => {
+    return () => {
+      if (isGhostMode && conversationId?.startsWith('ghost-')) {
+        // Messages will be automatically cleared when component unmounts
+        console.log('Ghost Mode: Conversație temporară ștearsă');
+      }
+    };
+  }, [isGhostMode, conversationId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -138,18 +165,27 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated }:
     try {
       let currentConversationId = conversationId;
       
-      if (!currentConversationId) {
-        const { data: newConv, error: convError } = await supabase
-          .from("conversations")
-          .insert({ user_id: user.id, title: input.slice(0, 50) })
-          .select()
-          .single();
+      // Only create/save conversation if NOT in Ghost Mode
+      if (!isGhostMode) {
+        if (!currentConversationId) {
+          const { data: newConv, error: convError } = await supabase
+            .from("conversations")
+            .insert({ user_id: user.id, title: input.slice(0, 50) })
+            .select()
+            .single();
 
-        if (convError) throw convError;
-        currentConversationId = newConv.id;
-        setConversationId(currentConversationId);
-        if (onConversationCreated) {
-          onConversationCreated(currentConversationId);
+          if (convError) throw convError;
+          currentConversationId = newConv.id;
+          setConversationId(currentConversationId);
+          if (onConversationCreated) {
+            onConversationCreated(currentConversationId);
+          }
+        }
+      } else {
+        // Ghost Mode: use temporary ID, don't save to DB
+        if (!currentConversationId) {
+          currentConversationId = 'ghost-' + Date.now();
+          setConversationId(currentConversationId);
         }
       }
 
@@ -164,21 +200,34 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated }:
         }))
       );
 
-      const userMessage = {
+      const userMessage: Message = {
+        id: 'msg-' + Date.now(),
         conversation_id: currentConversationId,
         role: "user",
         content: input,
         files: filesData.length > 0 ? filesData : null,
+        created_at: new Date().toISOString()
       };
 
-      const { data: savedUserMsg } = await supabase
-        .from("messages")
-        .insert(userMessage)
-        .select()
-        .single();
+      // Only save to DB if NOT in Ghost Mode
+      if (!isGhostMode) {
+        const { data: savedUserMsg } = await supabase
+          .from("messages")
+          .insert({
+            conversation_id: currentConversationId,
+            role: userMessage.role,
+            content: userMessage.content,
+            files: userMessage.files,
+          })
+          .select()
+          .single();
 
-      if (savedUserMsg) {
-        setMessages(prev => [...prev, savedUserMsg]);
+        if (savedUserMsg) {
+          setMessages(prev => [...prev, savedUserMsg]);
+        }
+      } else {
+        // Ghost Mode: just add to state
+        setMessages(prev => [...prev, userMessage]);
       }
 
       setInput("");
@@ -260,20 +309,32 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated }:
         }
       }
 
-      const { data: savedAssistantMsg } = await supabase
-        .from("messages")
-        .insert({
-          conversation_id: currentConversationId,
-          role: "assistant",
-          content: fullResponse,
-        })
-        .select()
-        .single();
+      // Only save assistant message to DB if NOT in Ghost Mode
+      if (!isGhostMode) {
+        const { data: savedAssistantMsg } = await supabase
+          .from("messages")
+          .insert({
+            conversation_id: currentConversationId,
+            role: "assistant",
+            content: fullResponse,
+          })
+          .select()
+          .single();
 
-      if (savedAssistantMsg) {
+        if (savedAssistantMsg) {
+          setMessages(prev => 
+            prev.map(msg => 
+              msg.id === tempAssistantMessage.id ? savedAssistantMsg : msg
+            )
+          );
+        }
+      } else {
+        // Ghost Mode: just update the temp message with final content
         setMessages(prev => 
           prev.map(msg => 
-            msg.id === tempAssistantMessage.id ? savedAssistantMsg : msg
+            msg.id === tempAssistantMessage.id 
+              ? { ...msg, content: fullResponse }
+              : msg
           )
         );
       }
