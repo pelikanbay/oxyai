@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Sparkles, User, LogOut, Menu, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,16 @@ interface HeaderProps {
 }
 
 const Header = ({ onMenuClick, onLogoClick }: HeaderProps) => {
+  const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
+
+  const handleLogoClick = () => {
+    if (onLogoClick) {
+      onLogoClick();
+    } else {
+      navigate("/");
+    }
+  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -56,7 +66,7 @@ const Header = ({ onMenuClick, onLogoClick }: HeaderProps) => {
             </Button>
           )}
           <button 
-            onClick={onLogoClick} 
+            onClick={handleLogoClick} 
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
             <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center shadow-glow">
@@ -85,7 +95,7 @@ const Header = ({ onMenuClick, onLogoClick }: HeaderProps) => {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => window.location.href = "/profile"} className="cursor-pointer">
+                <DropdownMenuItem onClick={() => navigate("/profile")} className="cursor-pointer">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Profil & Setări</span>
                 </DropdownMenuItem>
