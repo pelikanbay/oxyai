@@ -7,6 +7,7 @@ import { Auth } from "@/components/Auth";
 import { ConversationHistory } from "@/components/ConversationHistory";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
 import CookieConsent from "@/components/CookieConsent";
+import LegalDisclaimerBanner from "@/components/LegalDisclaimerBanner";
 import { UsageTracker } from "@/components/UsageTracker";
 import { useGhostMode } from "@/hooks/useGhostMode";
 import AdUnit from "@/components/AdUnit";
@@ -88,8 +89,9 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground font-['Inter']">
       <AnalyticsTracker />
       <CookieConsent />
+      <LegalDisclaimerBanner />
       <UsageTracker />
-      <Header 
+      <Header
         onMenuClick={() => setMobileMenuOpen(true)} 
         onLogoClick={handleNewConversation}
         isGhostMode={isGhostMode}
