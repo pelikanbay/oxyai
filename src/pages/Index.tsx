@@ -7,11 +7,17 @@ import Monetization from "@/components/Monetization";
 import Footer from "@/components/Footer";
 import { Auth } from "@/components/Auth";
 import { ConversationHistory } from "@/components/ConversationHistory";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 const Index = () => {
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [showHistory, setShowHistory] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentConversationId, setCurrentConversationId] = useState<string | undefined>();
 
   useEffect(() => {
@@ -29,10 +35,12 @@ const Index = () => {
 
   const handleSelectConversation = (id: string) => {
     setCurrentConversationId(id);
+    setMobileMenuOpen(false); // Close mobile menu when selecting
   };
 
   const handleNewConversation = () => {
     setCurrentConversationId(undefined);
+    setMobileMenuOpen(false); // Close mobile menu when creating new
   };
 
   if (loading) {
@@ -49,10 +57,25 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground font-['Inter']">
-      <Header />
+      <Header onMenuClick={() => setMobileMenuOpen(true)} />
+      
+      {/* Mobile Drawer */}
+      <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+        <SheetContent side="left" className="w-80 p-0">
+          <SheetHeader className="sr-only">
+            <SheetTitle>Istoric Conversații</SheetTitle>
+          </SheetHeader>
+          <ConversationHistory
+            onSelectConversation={handleSelectConversation}
+            onNewConversation={handleNewConversation}
+            currentConversationId={currentConversationId}
+          />
+        </SheetContent>
+      </Sheet>
+
       <div className="flex h-[calc(100vh-4rem)]">
-        {/* Sidebar with conversation history - always visible on desktop */}
-        <aside className="w-80 border-r border-border bg-card/50 overflow-y-auto">
+        {/* Desktop Sidebar - visible only on large screens */}
+        <aside className="hidden lg:block w-80 border-r border-border bg-card/50 overflow-y-auto">
           <ConversationHistory
             onSelectConversation={handleSelectConversation}
             onNewConversation={handleNewConversation}
