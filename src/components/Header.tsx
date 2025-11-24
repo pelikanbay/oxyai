@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { User, LogOut, Menu, Settings } from "lucide-react";
+import { User, LogOut, Menu, Settings, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import recyeaiLogo from "@/assets/recyeai-logo.png";
 import GhostModeIndicator from "@/components/GhostModeIndicator";
+import PremiumBadge from "@/components/PremiumBadge";
+import { useUserRole } from "@/hooks/useUserRole";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +27,7 @@ interface HeaderProps {
 const Header = ({ onMenuClick, onLogoClick, isGhostMode = false, onToggleGhostMode }: HeaderProps) => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
+  const { isAdmin } = useUserRole();
 
   const handleLogoClick = () => {
     if (onLogoClick) {
@@ -128,7 +131,10 @@ const Header = ({ onMenuClick, onLogoClick, isGhostMode = false, onToggleGhostMo
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium">Contul Meu</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium">Contul Meu</p>
+                      <PremiumBadge />
+                    </div>
                     <p className="text-xs text-muted-foreground truncate">
                       {user.email}
                     </p>
@@ -139,6 +145,12 @@ const Header = ({ onMenuClick, onLogoClick, isGhostMode = false, onToggleGhostMo
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Profil & Setări</span>
                 </DropdownMenuItem>
+                {isAdmin && (
+                  <DropdownMenuItem onClick={() => navigate("/admin")} className="cursor-pointer">
+                    <Shield className="mr-2 h-4 w-4" />
+                    <span>Panou Admin</span>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={handleLogout} className="text-destructive cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Deconectare</span>
