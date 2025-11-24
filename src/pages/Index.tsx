@@ -7,6 +7,9 @@ import Monetization from "@/components/Monetization";
 import Footer from "@/components/Footer";
 import { Auth } from "@/components/Auth";
 import { ConversationHistory } from "@/components/ConversationHistory";
+import AnalyticsTracker from "@/components/AnalyticsTracker";
+import AdSpace from "@/components/AdSpace";
+import { UsageTracker } from "@/components/UsageTracker";
 import {
   Sheet,
   SheetContent,
@@ -57,6 +60,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground font-['Inter']">
+      <AnalyticsTracker />
+      <UsageTracker />
       <Header onMenuClick={() => setMobileMenuOpen(true)} />
       
       {/* Mobile Drawer */}
@@ -89,6 +94,12 @@ const Index = () => {
             conversationId={currentConversationId}
             onConversationCreated={setCurrentConversationId}
           />
+          
+          {/* Ad Space after Hero */}
+          <div className="container mx-auto max-w-4xl px-4 py-4">
+            <AdSpace id="after-hero-ad" format="horizontal" />
+          </div>
+          
           <HowItWorks />
           <Monetization />
         </main>
