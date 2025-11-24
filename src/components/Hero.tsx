@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Sparkles, Loader2, Upload, X, FileText } from "lucide-react";
@@ -10,7 +11,21 @@ const Hero = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -54,10 +69,34 @@ const Hero = () => {
   const handleGenerate = async () => {
     if (!input.trim() && files.length === 0) return;
     
+    if (!user) {
+      toast({
+        title: "Eroare",
+        description: "Trebuie să fii autentificat pentru a folosi această funcție",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     setOutput("");
     
     try {
+      // Create or use existing conversation
+      let currentConversationId = conversationId;
+      
+      if (!currentConversationId) {
+        const { data: newConv, error: convError } = await supabase
+          .from("conversations")
+          .insert({ user_id: user.id, title: input.slice(0, 50) })
+          .select()
+          .single();
+
+        if (convError) throw convError;
+        currentConversationId = newConv.id;
+        setConversationId(currentConversationId);
+      }
+
       const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
       
       const filesData = await Promise.all(
@@ -68,6 +107,14 @@ const Hero = () => {
           content: await readFileAsBase64(file)
         }))
       );
+
+      // Save user message
+      await supabase.from("messages").insert({
+        conversation_id: currentConversationId,
+        role: "user",
+        content: input,
+        files: filesData.length > 0 ? filesData : null,
+      });
       
       const resp = await fetch(CHAT_URL, {
         method: "POST",
@@ -149,6 +196,16 @@ const Hero = () => {
           } catch {}
         }
       }
+
+      // Save AI response
+      await supabase.from("messages").insert({
+        conversation_id: currentConversationId,
+        role: "assistant",
+        content: fullResponse,
+      });
+
+      setInput("");
+      setFiles([]);
 
     } catch (error) {
       console.error("Error:", error);
