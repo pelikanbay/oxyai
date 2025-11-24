@@ -16,14 +16,16 @@ serve(async (req) => {
       throw new Error("OPENROUTER_API_KEY is not configured");
     }
 
-    // Use defaults if not provided
+    // Use defaults if not provided - OPTIMIZED FOR SPEED
     const selectedModel = model || "deepseek/deepseek-r1-0528-qwen3-8b:free";
     const selectedTemperature = temperature ?? 0.7;
 
-    console.log("Received message:", message);
-    console.log("Received files:", files?.length || 0);
-    console.log("Using model:", selectedModel);
-    console.log("Using temperature:", selectedTemperature);
+    console.log("Processing request:", {
+      model: selectedModel,
+      temperature: selectedTemperature,
+      hasMessage: !!message,
+      filesCount: files?.length || 0
+    });
 
     // Construct user message content with proper multimodal support
     let userContent: any = [];
@@ -32,9 +34,9 @@ serve(async (req) => {
       userContent.push({ type: "text", text: message });
     }
     
+    // Process files efficiently
     if (files && files.length > 0) {
       for (const file of files) {
-        // Check if it's an image
         if (file.type && file.type.startsWith('image/')) {
           userContent.push({
             type: "image_url",
@@ -43,15 +45,15 @@ serve(async (req) => {
             }
           });
         } else {
-          // For non-image files, include metadata
           userContent.push({
             type: "text",
-            text: `\n\nFișier atașat: ${file.name} (${file.type}, ${(file.size / 1024).toFixed(2)} KB)`
+            text: `\n\n📎 Fișier atașat: ${file.name} (${file.type}, ${(file.size / 1024).toFixed(2)} KB)`
           });
         }
       }
     }
 
+    // Optimized API call with streaming
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -92,6 +94,7 @@ Răspunde în limba română. You communicate in a professional, technical tone 
           { role: "user", content: userContent },
         ],
         stream: true,
+        max_tokens: 2000, // Limit for faster responses
       }),
     });
 

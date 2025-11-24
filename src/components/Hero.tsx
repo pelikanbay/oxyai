@@ -10,6 +10,7 @@ import { useUsageTracking } from "@/hooks/useUsageTracking";
 import ChatMessage from "./ChatMessage";
 import VoiceIndicator from "./VoiceIndicator";
 import ModelSelector from "./ModelSelector";
+import { RateLimitRetry } from "./RateLimitRetry";
 
 interface Message {
   id: string;
@@ -33,6 +34,8 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [user, setUser] = useState<any>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [showRateLimitRetry, setShowRateLimitRetry] = useState(false);
+  const [pendingRequest, setPendingRequest] = useState<any>(null);
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -277,15 +280,19 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
       if (!resp.ok) {
         const errorData = await resp.json();
         
-        // Handle rate limit with helpful message
+        // Handle rate limit with auto-retry
         if (resp.status === 429) {
-          toast({
-            title: "Rate Limit",
-            description: errorData.error || "Prea multe cereri. Te rog așteaptă 30-60 secunde.",
-            variant: "destructive",
-            duration: 5000,
+          const retryAfter = errorData.retryAfter || 60;
+          
+          setPendingRequest({
+            input,
+            filesData,
+            currentConversationId,
+            userMessage,
+            tempAssistantMessage
           });
-          setMessages(prev => prev.filter(msg => !msg.id.startsWith('temp-')));
+          
+          setShowRateLimitRetry(true);
           setIsLoading(false);
           return;
         }
@@ -402,6 +409,148 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
     }
   };
 
+  const handleRetry = async () => {
+    if (!pendingRequest) return;
+
+    setShowRateLimitRetry(false);
+    setIsLoading(true);
+
+    try {
+      const { input, filesData, currentConversationId, tempAssistantMessage } = pendingRequest;
+      
+      const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+      
+      const resp = await fetch(CHAT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ 
+          message: input,
+          files: filesData,
+          model: selectedModel,
+          temperature: temperature
+        }),
+      });
+
+      if (!resp.ok) {
+        const errorData = await resp.json();
+        
+        if (resp.status === 429) {
+          setShowRateLimitRetry(true);
+          return;
+        }
+        
+        throw new Error(errorData.error || "Eroare la generarea răspunsului");
+      }
+
+      if (!resp.body) {
+        throw new Error("No response body");
+      }
+
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let textBuffer = "";
+      let streamDone = false;
+      let fullResponse = "";
+
+      while (!streamDone) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        textBuffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
+
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (line.startsWith(":") || line.trim() === "") continue;
+          if (!line.startsWith("data: ")) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") {
+            streamDone = true;
+            break;
+          }
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              fullResponse += content;
+              setMessages(prev => 
+                prev.map(msg => 
+                  msg.id === tempAssistantMessage.id 
+                    ? { ...msg, content: fullResponse }
+                    : msg
+                )
+              );
+            }
+          } catch {
+            textBuffer = line + "\n" + textBuffer;
+            break;
+          }
+        }
+      }
+
+      if (!isGhostMode) {
+        const { data: savedAssistantMsg } = await supabase
+          .from("messages")
+          .insert({
+            conversation_id: currentConversationId,
+            role: "assistant",
+            content: fullResponse,
+          })
+          .select()
+          .single();
+
+        if (savedAssistantMsg) {
+          setMessages(prev => 
+            prev.map(msg => 
+              msg.id === tempAssistantMessage.id ? savedAssistantMsg : msg
+            )
+          );
+        }
+      }
+
+      if (isVoiceModeEnabled && fullResponse) {
+        speak(fullResponse);
+      }
+
+      setPendingRequest(null);
+      
+      toast({
+        title: "Succes",
+        description: "Cererea a fost procesată cu succes!",
+      });
+
+    } catch (error) {
+      console.error("Retry error:", error);
+      toast({
+        title: "Eroare",
+        description: error instanceof Error ? error.message : "A apărut o eroare",
+        variant: "destructive",
+      });
+      setMessages(prev => prev.filter(msg => !msg.id.startsWith('temp-')));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCancelRetry = () => {
+    setShowRateLimitRetry(false);
+    setPendingRequest(null);
+    setMessages(prev => prev.filter(msg => !msg.id.startsWith('temp-')));
+    
+    toast({
+      title: "Anulat",
+      description: "Cererea a fost anulată.",
+    });
+  };
+
   return (
     <div className="flex flex-col h-full max-h-[calc(100vh-8rem)]">
       {/* Voice Mode Indicator */}
@@ -414,7 +563,16 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
       
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto px-4 md:px-6 py-4 space-y-4">
-        {messages.length === 0 ? (
+        {showRateLimitRetry ? (
+          <div className="flex items-center justify-center h-full">
+            <RateLimitRetry
+              onRetry={handleRetry}
+              onCancel={handleCancelRetry}
+              retryAfterSeconds={60}
+              autoRetry={true}
+            />
+          </div>
+        ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center py-12">
             <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-primary flex items-center justify-center mb-4 shadow-glow">
               <ImageIcon className="w-8 h-8 md:w-10 md:h-10 text-primary-foreground" />
