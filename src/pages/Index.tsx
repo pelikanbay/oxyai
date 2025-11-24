@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { Auth } from "@/components/Auth";
 import { ConversationHistory } from "@/components/ConversationHistory";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
+import CookieConsent from "@/components/CookieConsent";
 import { UsageTracker } from "@/components/UsageTracker";
 import { useGhostMode } from "@/hooks/useGhostMode";
 import {
@@ -85,6 +86,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground font-['Inter']">
       <AnalyticsTracker />
+      <CookieConsent />
       <UsageTracker />
       <Header 
         onMenuClick={() => setMobileMenuOpen(true)} 
