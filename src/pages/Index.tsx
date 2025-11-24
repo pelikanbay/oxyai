@@ -50,20 +50,18 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground font-['Inter']">
       <Header />
-      <div className="flex">
-        {/* Sidebar with conversation history */}
-        {showHistory && (
-          <aside className="w-80 border-r border-border bg-card/50 hidden lg:block">
-            <ConversationHistory
-              onSelectConversation={handleSelectConversation}
-              onNewConversation={handleNewConversation}
-              currentConversationId={currentConversationId}
-            />
-          </aside>
-        )}
+      <div className="flex h-[calc(100vh-4rem)]">
+        {/* Sidebar with conversation history - always visible on desktop */}
+        <aside className="w-80 border-r border-border bg-card/50 overflow-y-auto">
+          <ConversationHistory
+            onSelectConversation={handleSelectConversation}
+            onNewConversation={handleNewConversation}
+            currentConversationId={currentConversationId}
+          />
+        </aside>
         
         {/* Main content */}
-        <main className="flex-1">
+        <main className="flex-1 overflow-y-auto">
           <Hero 
             conversationId={currentConversationId}
             onConversationCreated={setCurrentConversationId}
