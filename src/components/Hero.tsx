@@ -2,9 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Upload, X, Send, Image as ImageIcon } from "lucide-react";
+import { Loader2, Upload, X, Send, Image as ImageIcon, Mic, MicOff, Volume2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useVoiceMode } from "@/hooks/useVoiceMode";
 import ChatMessage from "./ChatMessage";
+import VoiceIndicator from "./VoiceIndicator";
 
 interface Message {
   id: string;
@@ -29,6 +31,24 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated }:
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Voice mode hook
+  const {
+    isListening,
+    isSpeaking,
+    isVoiceModeEnabled,
+    speak,
+    toggleVoiceMode,
+  } = useVoiceMode({
+    onTranscript: (text) => {
+      setInput(text);
+      // Auto-send after voice input
+      setTimeout(() => {
+        handleGenerate();
+      }, 100);
+    },
+    autoSend: true,
+  });
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -258,6 +278,11 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated }:
         );
       }
 
+      // Speak the response if voice mode is enabled
+      if (isVoiceModeEnabled && fullResponse) {
+        speak(fullResponse);
+      }
+
     } catch (error) {
       console.error("Error:", error);
       toast({
@@ -280,6 +305,9 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated }:
 
   return (
     <div className="flex flex-col h-full max-h-[calc(100vh-8rem)]">
+      {/* Voice Mode Indicator */}
+      <VoiceIndicator isListening={isListening} isSpeaking={isSpeaking} />
+      
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto px-4 md:px-6 py-4 space-y-4">
         {messages.length === 0 ? (
@@ -354,12 +382,16 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated }:
             <div className="flex-1 relative">
               <Textarea
                 ref={textareaRef}
-                placeholder="Întreabă orice: analizează imagini, rezolvă probleme, scrie cod, creează conținut... (Enter = trimite, Shift+Enter = linie nouă)"
+                placeholder={
+                  isVoiceModeEnabled 
+                    ? "🎤 Voice Mode activ - vorbește sau scrie..." 
+                    : "Întreabă orice despre penetration testing, red teaming, ethical hacking... (Enter = trimite, Shift+Enter = linie nouă)"
+                }
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyPress}
                 className="min-h-[60px] max-h-[200px] resize-none pr-12 bg-background"
-                disabled={isLoading}
+                disabled={isLoading || isListening}
               />
               <label htmlFor="file-input" className="absolute bottom-3 right-3 cursor-pointer">
                 <input
@@ -374,9 +406,34 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated }:
                 <Upload className="w-5 h-5 text-muted-foreground hover:text-foreground transition-colors" />
               </label>
             </div>
+            
+            {/* Voice Mode Toggle Button */}
+            <Button
+              onClick={toggleVoiceMode}
+              size="icon"
+              variant={isVoiceModeEnabled ? "default" : "outline"}
+              className={`h-[60px] w-[60px] transition-all ${
+                isVoiceModeEnabled 
+                  ? 'bg-gradient-secondary shadow-glow-secondary' 
+                  : 'hover:bg-accent'
+              }`}
+              title={isVoiceModeEnabled ? "Dezactivează Voice Mode" : "Activează Voice Mode"}
+            >
+              {isSpeaking ? (
+                <Volume2 className="w-5 h-5 animate-pulse" />
+              ) : isListening ? (
+                <Mic className="w-5 h-5 animate-pulse text-accent" />
+              ) : isVoiceModeEnabled ? (
+                <Mic className="w-5 h-5" />
+              ) : (
+                <MicOff className="w-5 h-5" />
+              )}
+            </Button>
+            
+            {/* Send Button */}
             <Button
               onClick={handleGenerate}
-              disabled={isLoading || (!input.trim() && files.length === 0)}
+              disabled={isLoading || (!input.trim() && files.length === 0) || isListening}
               size="icon"
               className="h-[60px] w-[60px] bg-gradient-primary hover:opacity-90 shadow-glow"
             >
