@@ -56,12 +56,17 @@ const Header = ({ onMenuClick }: HeaderProps) => {
               <Menu className="h-5 w-5" />
             </Button>
           )}
-          <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center shadow-glow">
-            <Sparkles className="w-6 h-6 text-primary-foreground" />
-          </div>
-          <span className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-            OxyAI
-          </span>
+          <button 
+            onClick={() => navigate("/")} 
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          >
+            <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center shadow-glow">
+              <Sparkles className="w-6 h-6 text-primary-foreground" />
+            </div>
+            <span className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              OxyAI
+            </span>
+          </button>
         </div>
         <nav className="flex items-center gap-6">
           {user && (
