@@ -15,6 +15,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
 } from "@/components/ui/sheet";
 
 const Index = () => {
@@ -69,6 +70,9 @@ const Index = () => {
         <SheetContent side="left" className="w-80 p-0">
           <SheetHeader className="sr-only">
             <SheetTitle>Istoric Conversații</SheetTitle>
+            <SheetDescription>
+              Vezi și gestionează toate conversațiile tale anterioare
+            </SheetDescription>
           </SheetHeader>
           <ConversationHistory
             onSelectConversation={handleSelectConversation}

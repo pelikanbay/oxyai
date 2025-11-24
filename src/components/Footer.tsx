@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Sparkles } from "lucide-react";
 
 const Footer = () => {
@@ -25,14 +26,14 @@ const Footer = () => {
             <h4 className="font-semibold mb-4">Legal</h4>
             <ul className="space-y-2">
               <li>
-                <a href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Politică de Confidențialitate
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Termeni și Condiții
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
