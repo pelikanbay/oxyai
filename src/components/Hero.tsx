@@ -563,17 +563,18 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
       
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto px-4 md:px-6 py-4 space-y-4">
-        {showRateLimitRetry ? (
-          <div className="flex items-center justify-center h-full">
-            <RateLimitRetry
-              onRetry={handleRetry}
-              onCancel={handleCancelRetry}
-              retryAfterSeconds={60}
-              autoRetry={true}
-            />
-          </div>
-        ) : messages.length === 0 ? (
+        {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center py-12">
+            {showRateLimitRetry && (
+              <div className="mb-6 w-full max-w-md">
+                <RateLimitRetry
+                  onRetry={handleRetry}
+                  onCancel={handleCancelRetry}
+                  retryAfterSeconds={60}
+                  autoRetry={true}
+                />
+              </div>
+            )}
             <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-primary flex items-center justify-center mb-4 shadow-glow">
               <ImageIcon className="w-8 h-8 md:w-10 md:h-10 text-primary-foreground" />
             </div>
@@ -586,6 +587,16 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
           </div>
         ) : (
           <>
+            {showRateLimitRetry && (
+              <div className="mb-4">
+                <RateLimitRetry
+                  onRetry={handleRetry}
+                  onCancel={handleCancelRetry}
+                  retryAfterSeconds={60}
+                  autoRetry={true}
+                />
+              </div>
+            )}
             {messages.map((msg, index) => (
               <ChatMessage
                 key={msg.id || index}
@@ -653,7 +664,7 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyPress}
                 className="min-h-[60px] max-h-[200px] resize-none pr-12 bg-background"
-                disabled={isLoading || isListening}
+                disabled={isLoading}
               />
               <label htmlFor="file-input" className="absolute bottom-3 right-3 cursor-pointer">
                 <input
@@ -680,6 +691,7 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
                   : 'hover:bg-accent'
               }`}
               title={isVoiceModeEnabled ? "Dezactivează Voice Mode" : "Activează Voice Mode"}
+              disabled={isLoading}
             >
               {isSpeaking ? (
                 <Volume2 className="w-5 h-5 animate-pulse" />
@@ -695,7 +707,7 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
             {/* Send Button */}
             <Button
               onClick={handleGenerate}
-              disabled={isLoading || (!input.trim() && files.length === 0) || isListening}
+              disabled={isLoading || (!input.trim() && files.length === 0)}
               size="icon"
               className="h-[60px] w-[60px] bg-gradient-primary hover:opacity-90 shadow-glow"
             >
