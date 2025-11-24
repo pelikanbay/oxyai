@@ -5,7 +5,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { Sparkles, Loader2, Upload, X, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-const Hero = () => {
+interface Message {
+  id: string;
+  role: string;
+  content: string;
+  files?: any;
+  created_at: string;
+}
+
+interface HeroProps {
+  conversationId?: string;
+  onConversationCreated?: (id: string) => void;
+}
+
+const Hero = ({ conversationId: externalConversationId, onConversationCreated }: HeroProps) => {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -13,6 +26,7 @@ const Hero = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [user, setUser] = useState<any>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -26,6 +40,47 @@ const Hero = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Load conversation messages when conversationId changes
+  useEffect(() => {
+    if (externalConversationId) {
+      setConversationId(externalConversationId);
+      loadConversationMessages(externalConversationId);
+    } else {
+      // New conversation
+      setConversationId(null);
+      setMessages([]);
+      setInput("");
+      setOutput("");
+      setFiles([]);
+    }
+  }, [externalConversationId]);
+
+  const loadConversationMessages = async (convId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("messages")
+        .select("*")
+        .eq("conversation_id", convId)
+        .order("created_at", { ascending: true });
+
+      if (error) throw error;
+      setMessages(data || []);
+      
+      // Set output to last assistant message
+      const lastAssistant = data?.reverse().find(m => m.role === "assistant");
+      if (lastAssistant) {
+        setOutput(lastAssistant.content);
+      }
+    } catch (error) {
+      console.error("Error loading messages:", error);
+      toast({
+        title: "Eroare",
+        description: "Nu s-au putut încărca mesajele",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -95,6 +150,9 @@ const Hero = () => {
         if (convError) throw convError;
         currentConversationId = newConv.id;
         setConversationId(currentConversationId);
+        if (onConversationCreated) {
+          onConversationCreated(currentConversationId);
+        }
       }
 
       const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;

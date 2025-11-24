@@ -6,10 +6,13 @@ import HowItWorks from "@/components/HowItWorks";
 import Monetization from "@/components/Monetization";
 import Footer from "@/components/Footer";
 import { Auth } from "@/components/Auth";
+import { ConversationHistory } from "@/components/ConversationHistory";
 
 const Index = () => {
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showHistory, setShowHistory] = useState(true);
+  const [currentConversationId, setCurrentConversationId] = useState<string | undefined>();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -23,6 +26,14 @@ const Index = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const handleSelectConversation = (id: string) => {
+    setCurrentConversationId(id);
+  };
+
+  const handleNewConversation = () => {
+    setCurrentConversationId(undefined);
+  };
 
   if (loading) {
     return (
@@ -39,11 +50,28 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground font-['Inter']">
       <Header />
-      <main>
-        <Hero />
-        <HowItWorks />
-        <Monetization />
-      </main>
+      <div className="flex">
+        {/* Sidebar with conversation history */}
+        {showHistory && (
+          <aside className="w-80 border-r border-border bg-card/50 hidden lg:block">
+            <ConversationHistory
+              onSelectConversation={handleSelectConversation}
+              onNewConversation={handleNewConversation}
+              currentConversationId={currentConversationId}
+            />
+          </aside>
+        )}
+        
+        {/* Main content */}
+        <main className="flex-1">
+          <Hero 
+            conversationId={currentConversationId}
+            onConversationCreated={setCurrentConversationId}
+          />
+          <HowItWorks />
+          <Monetization />
+        </main>
+      </div>
       <Footer />
     </div>
   );
