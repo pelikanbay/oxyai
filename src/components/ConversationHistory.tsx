@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { MessageSquare, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { MessageSquare, Plus, ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useSwipe } from "@/hooks/use-swipe";
 
@@ -26,7 +25,6 @@ export const ConversationHistory = ({
   currentConversationId 
 }: ConversationHistoryProps) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [loading, setLoading] = useState(true);
   
   const currentIndex = conversations.findIndex(conv => conv.id === currentConversationId);
   const hasPrevious = currentIndex > 0;
@@ -51,36 +49,36 @@ export const ConversationHistory = ({
   });
 
   useEffect(() => {
-    fetchConversations();
-
-    // Subscribe to changes
-    const channel = supabase
-      .channel('conversations_changes')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'conversations' },
-        () => fetchConversations()
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    loadConversations();
   }, []);
 
-  const fetchConversations = async () => {
+  const loadConversations = () => {
     try {
-      const { data, error } = await supabase
-        .from("conversations")
-        .select("id, title, created_at, updated_at")
-        .order("updated_at", { ascending: false });
-
-      if (error) throw error;
-      setConversations(data || []);
+      const stored = localStorage.getItem('conversations');
+      if (stored) {
+        setConversations(JSON.parse(stored));
+      }
     } catch (error) {
-      console.error("Error fetching conversations:", error);
+      console.error("Error loading conversations:", error);
       toast.error("Eroare la încărcarea conversațiilor");
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const deleteConversation = (id: string) => {
+    try {
+      const updated = conversations.filter(conv => conv.id !== id);
+      localStorage.setItem('conversations', JSON.stringify(updated));
+      localStorage.removeItem(`conversation_${id}`);
+      setConversations(updated);
+      
+      if (currentConversationId === id) {
+        onNewConversation();
+      }
+      
+      toast.success("Conversație ștearsă");
+    } catch (error) {
+      console.error("Error deleting conversation:", error);
+      toast.error("Eroare la ștergerea conversației");
     }
   };
 
@@ -127,40 +125,49 @@ export const ConversationHistory = ({
       </div>
       
       <div className="p-4">
-        <h3 className="font-semibold text-sm text-muted-foreground mb-3">ISTORIC</h3>
-        {loading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
-        ) : conversations.length === 0 ? (
+        <h3 className="font-semibold text-sm text-muted-foreground mb-3">ISTORIC (Sesiune locală)</h3>
+        {conversations.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground text-sm">
             <MessageSquare className="h-12 w-12 mx-auto mb-2 opacity-50" />
             <p>Nicio conversație încă</p>
+            <p className="text-xs mt-2">Conversațiile sunt stocate local pe acest dispozitiv</p>
           </div>
         ) : (
           <ScrollArea className="h-[calc(100vh-20rem)]">
             <div className="space-y-1">
               {conversations.map((conv, index) => (
-                <Button
-                  key={conv.id}
-                  variant={currentConversationId === conv.id ? "secondary" : "ghost"}
-                  className="w-full justify-start text-left h-auto py-3 px-3 transition-all hover:translate-x-1"
-                  onClick={() => onSelectConversation(conv.id)}
-                >
-                  <div className="flex flex-col items-start w-full min-w-0">
-                    <div className="flex items-center gap-2 w-full">
-                      <span className="text-xs text-muted-foreground flex-shrink-0">
-                        #{index + 1}
-                      </span>
-                      <span className="font-medium truncate flex-1 text-sm">
-                        {conv.title || "Conversație fără titlu"}
+                <div key={conv.id} className="group relative">
+                  <Button
+                    variant={currentConversationId === conv.id ? "secondary" : "ghost"}
+                    className="w-full justify-start text-left h-auto py-3 px-3 transition-all hover:translate-x-1 pr-10"
+                    onClick={() => onSelectConversation(conv.id)}
+                  >
+                    <div className="flex flex-col items-start w-full min-w-0">
+                      <div className="flex items-center gap-2 w-full">
+                        <span className="text-xs text-muted-foreground flex-shrink-0">
+                          #{index + 1}
+                        </span>
+                        <span className="font-medium truncate flex-1 text-sm">
+                          {conv.title || "Conversație fără titlu"}
+                        </span>
+                      </div>
+                      <span className="text-xs text-muted-foreground ml-6">
+                        {new Date(conv.updated_at).toLocaleDateString('ro-RO')}
                       </span>
                     </div>
-                    <span className="text-xs text-muted-foreground ml-6">
-                      {new Date(conv.updated_at).toLocaleDateString('ro-RO')}
-                    </span>
-                  </div>
-                </Button>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteConversation(conv.id);
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
+                </div>
               ))}
             </div>
           </ScrollArea>

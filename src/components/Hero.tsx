@@ -6,7 +6,7 @@ import { Loader2, Upload, X, Send, Image as ImageIcon, Mic, MicOff, Volume2 } fr
 import { useToast } from "@/hooks/use-toast";
 import { useVoiceMode } from "@/hooks/useVoiceMode";
 import { useModelSettings } from "@/hooks/useModelSettings";
-import { useUsageTracking } from "@/hooks/useUsageTracking";
+
 import ChatMessage from "./ChatMessage";
 import VoiceIndicator from "./VoiceIndicator";
 import ModelSelector from "./ModelSelector";
@@ -257,38 +257,41 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
         }
       }
 
-      // Only save assistant message to DB if NOT in Ghost Mode
-      if (!isGhostMode) {
-        const { data: savedAssistantMsg } = await supabase
-          .from("messages")
-          .insert({
-            conversation_id: currentConversationId,
-            role: "assistant",
-            content: fullResponse,
-          })
-          .select()
-          .single();
-
-        if (savedAssistantMsg) {
-          setMessages(prev => 
-            prev.map(msg => 
-              msg.id === tempAssistantMessage.id ? savedAssistantMsg : msg
-            )
-          );
-        }
-
-        // Increment usage stats
-        await incrementUsage();
-      } else {
-        // Ghost Mode: just update the temp message with final content
-        setMessages(prev => 
-          prev.map(msg => 
-            msg.id === tempAssistantMessage.id 
-              ? { ...msg, content: fullResponse }
-              : msg
-          )
+      // Update message with final content and save to localStorage
+      setMessages(prev => {
+        const updated = prev.map(msg => 
+          msg.id === tempAssistantMessage.id 
+            ? { ...msg, content: fullResponse }
+            : msg
         );
-      }
+        
+        // Save to localStorage
+        if (currentConversationId) {
+          localStorage.setItem(`conversation_${currentConversationId}`, JSON.stringify(updated));
+          
+          // Update conversations list
+          const conversationsStr = localStorage.getItem('conversations') || '[]';
+          const conversations = JSON.parse(conversationsStr);
+          const existingIndex = conversations.findIndex((c: any) => c.id === currentConversationId);
+          
+          const conversationData = {
+            id: currentConversationId,
+            title: updated.find(m => m.role === 'user')?.content.slice(0, 50) || 'Conversație nouă',
+            created_at: existingIndex === -1 ? new Date().toISOString() : conversations[existingIndex].created_at,
+            updated_at: new Date().toISOString()
+          };
+          
+          if (existingIndex === -1) {
+            conversations.unshift(conversationData);
+          } else {
+            conversations[existingIndex] = conversationData;
+          }
+          
+          localStorage.setItem('conversations', JSON.stringify(conversations));
+        }
+        
+        return updated;
+      });
 
       // Speak the response if voice mode is enabled
       if (isVoiceModeEnabled && fullResponse) {
