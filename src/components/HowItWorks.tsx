@@ -3,18 +3,18 @@ import { MessageSquare, Sparkles, CheckCircle } from "lucide-react";
 const steps = [
   {
     icon: MessageSquare,
-    title: "1. Scrie Întrebarea",
-    description: "Descrie provocarea ta IT sau cybersecurity în câteva cuvinte simple"
+    title: "1. Pune Întrebarea",
+    description: "Scrie orice întrebare sau încarcă o imagine pentru analiză - subiect, problemă sau idee"
   },
   {
     icon: Sparkles,
-    title: "2. AI Analizează",
-    description: "Algoritmii noștri AI procesează întrebarea și caută cele mai bune soluții"
+    title: "2. AI Procesează",
+    description: "Inteligența artificială analizează cererea ta și generează răspunsuri personalizate instant"
   },
   {
     icon: CheckCircle,
-    title: "3. Primești Răspunsul",
-    description: "Obții idei concrete și soluții practice instant, 100% gratuit"
+    title: "3. Obții Rezultate",
+    description: "Primești răspunsuri detaliate, analize complete și soluții concrete în secunde"
   }
 ];
 
@@ -28,7 +28,7 @@ const HowItWorks = () => {
             <span className="block text-primary">OxyAI</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Trei pași simpli pentru a obține soluții AI instant
+            Trei pași simpli pentru a obține răspunsuri AI instant la orice întrebare
           </p>
         </div>
 
@@ -57,6 +57,22 @@ const HowItWorks = () => {
               </div>
             );
           })}
+        </div>
+
+        {/* Features Grid */}
+        <div className="mt-16 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            { emoji: "🖼️", title: "Analiză Imagini", desc: "Descrie și analizează orice imagine" },
+            { emoji: "💻", title: "Cod & Tech", desc: "Generare cod, debugging și soluții" },
+            { emoji: "✍️", title: "Scriere Creativă", desc: "Articole, povești și conținut" },
+            { emoji: "🌍", title: "Traduceri", desc: "Traduceri precise în orice limbă" },
+          ].map((feature, i) => (
+            <div key={i} className="bg-muted/50 rounded-xl p-6 border border-border hover:border-primary/30 transition-all">
+              <div className="text-4xl mb-3">{feature.emoji}</div>
+              <h4 className="font-semibold mb-2">{feature.title}</h4>
+              <p className="text-sm text-muted-foreground">{feature.desc}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>

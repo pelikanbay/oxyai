@@ -291,7 +291,7 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated }:
               Bine ai venit la <span className="bg-gradient-primary bg-clip-text text-transparent">OxyAI</span>
             </h2>
             <p className="text-muted-foreground max-w-md">
-              Asistentul tău AI pentru IT și Cybersecurity. Pune întrebări, încarcă imagini sau documente pentru analiză.
+              Asistentul tău AI universal. Analizează imagini, generează cod, rezolvă probleme, creează conținut și mult mai mult!
             </p>
           </div>
         ) : (
@@ -354,7 +354,7 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated }:
             <div className="flex-1 relative">
               <Textarea
                 ref={textareaRef}
-                placeholder="Scrie mesajul tău aici... (Enter pentru a trimite, Shift+Enter pentru linie nouă)"
+                placeholder="Întreabă orice: analizează imagini, rezolvă probleme, scrie cod, creează conținut... (Enter = trimite, Shift+Enter = linie nouă)"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyPress}

@@ -1,127 +1,211 @@
-import { ExternalLink, Shield, Zap, TrendingUp, Code } from "lucide-react";
+import { DollarSign, TrendingUp, Users, Zap, CreditCard, Code } from "lucide-react";
 import AdSpace from "./AdSpace";
+import { Button } from "./ui/button";
 
 const Monetization = () => {
-  // Real affiliate programs and monetization opportunities
-  const affiliatePrograms = [
+  const monetizationStrategies = [
     {
-      name: "NordVPN Affiliate",
-      description: "70% comision pentru fiecare vânzare de VPN securizat",
-      icon: Shield,
-      link: "https://nordvpn.com/ro/affiliate/",
-      commission: "70%",
+      name: "Google AdSense",
+      description: "Integrează reclame automate și câștigă din fiecare vizitator. Potențial: $1-5 per 1000 vizite.",
+      icon: TrendingUp,
+      action: "Configurează AdSense",
+      link: "https://www.google.com/adsense/start/",
+      color: "text-green-500",
+      potential: "$1-5 / 1000 vizite"
+    },
+    {
+      name: "Subscripții Premium",
+      description: "Oferă funcții avansate (mai multe mesaje, răspunsuri prioritare) prin abonament lunar.",
+      icon: CreditCard,
+      action: "Activează Stripe",
+      potential: "$5-20 / user / lună",
       color: "text-blue-500"
     },
     {
-      name: "Udemy Courses",
-      description: "15% comision pentru cursuri de IT și Cybersecurity",
-      icon: Code,
-      link: "https://www.udemy.com/affiliate/",
-      commission: "15%",
+      name: "Affiliate Marketing",
+      description: "Promovează produse și servicii relevante și câștigă comisioane din vânzări.",
+      icon: DollarSign,
+      action: "Vezi Programe",
+      potential: "5-50% comision",
       color: "text-purple-500"
     },
     {
-      name: "Digital Ocean",
-      description: "$25 pentru fiecare referral activ",
-      icon: Zap,
-      link: "https://www.digitalocean.com/referral-program",
-      commission: "$25/user",
+      name: "API pentru Dezvoltatori",
+      description: "Oferă acces API la platforma ta pentru dezvoltatori și companii.",
+      icon: Code,
+      action: "Creează API Key",
+      potential: "$0.01-0.10 / request",
       color: "text-cyan-500"
     },
     {
-      name: "Amazon Associates",
-      description: "Până la 10% din produse tech și cărți IT",
-      icon: TrendingUp,
-      link: "https://affiliate-program.amazon.com/",
-      commission: "3-10%",
+      name: "Sponsorizări",
+      description: "Contactează companii pentru sponsorizări directe și integrări brand.",
+      icon: Users,
+      action: "Contact Sponsori",
+      potential: "$500-5000 / lună",
       color: "text-orange-500"
+    },
+    {
+      name: "White Label",
+      description: "Vinde versiuni personalizate ale platformei către alte companii.",
+      icon: Zap,
+      action: "Pachete Enterprise",
+      potential: "$1000-10000 / client",
+      color: "text-pink-500"
     }
   ];
 
   return (
-    <section className="py-16 px-4">
+    <section id="monetization" className="py-20 px-4 bg-gradient-to-b from-card/30 to-background">
       <div className="container mx-auto max-w-6xl">
         {/* Top Ad Space */}
-        <div className="mb-8">
-          <AdSpace id="top-ad-1" format="horizontal" />
+        <div className="mb-12">
+          <AdSpace id="monetization-top" format="horizontal" />
         </div>
 
-        <div className="bg-card rounded-2xl border border-border p-8 shadow-card">
-          <div className="text-center mb-8">
-            <h3 className="text-3xl font-bold mb-4">
-              Susține OxyAI & Câștigă Venituri
-            </h3>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              OxyAI este 100% gratuit. Poți genera venituri promovând servicii premium pentru IT și cybersecurity prin programele noastre affiliate.
-            </p>
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-primary/10 border border-primary/20 mb-6">
+            <DollarSign className="w-5 h-5 text-primary" />
+            <span className="text-sm font-medium">Strategii de Monetizare</span>
           </div>
           
-          {/* Affiliate Programs Grid */}
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
-            {affiliatePrograms.map((program, index) => {
-              const Icon = program.icon;
-              return (
-                <a 
-                  key={index}
-                  href={program.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block p-6 bg-muted/50 rounded-xl border border-border hover:border-primary/50 transition-all group hover:shadow-glow"
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            Transformă Traficul în
+            <span className="block bg-gradient-primary bg-clip-text text-transparent">
+              Venituri Reale
+            </span>
+          </h2>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            6 metode dovedite pentru a genera venituri pasive din aplicația ta AI
+          </p>
+        </div>
+
+        {/* Monetization Strategies Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {monetizationStrategies.map((strategy, index) => {
+            const Icon = strategy.icon;
+            return (
+              <div 
+                key={index}
+                className="bg-card rounded-2xl border border-border p-6 hover:border-primary/50 transition-all hover:shadow-glow group"
+              >
+                <div className={`w-12 h-12 rounded-xl bg-gradient-primary/10 flex items-center justify-center mb-4 ${strategy.color}`}>
+                  <Icon className="w-6 h-6" />
+                </div>
+                
+                <h3 className="text-xl font-bold mb-2">{strategy.name}</h3>
+                
+                <div className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs rounded-full mb-3">
+                  {strategy.potential}
+                </div>
+                
+                <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+                  {strategy.description}
+                </p>
+                
+                <Button 
+                  variant="outline" 
+                  className="w-full group-hover:border-primary/50 transition-all"
+                  onClick={() => strategy.link && window.open(strategy.link, '_blank')}
                 >
-                  <div className="flex items-start gap-4 mb-3">
-                    <div className={`p-3 rounded-lg bg-background ${program.color}`}>
-                      <Icon className="w-6 h-6" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-semibold text-lg">{program.name}</span>
-                        <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                      </div>
-                      <div className="inline-block px-2 py-1 bg-primary/10 text-primary text-xs rounded-full mb-2">
-                        Comision: {program.commission}
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {program.description}
-                  </p>
-                </a>
-              );
-            })}
+                  {strategy.action}
+                </Button>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Revenue Calculator */}
+        <div className="bg-gradient-primary/10 rounded-2xl border border-primary/20 p-8 mb-12">
+          <h3 className="text-2xl font-bold mb-6 text-center">💰 Calculator Potențial de Venit</h3>
+          
+          <div className="grid md:grid-cols-3 gap-6 mb-6">
+            <div className="bg-background/50 rounded-xl p-6 text-center">
+              <div className="text-3xl font-bold text-primary mb-2">1,000</div>
+              <div className="text-sm text-muted-foreground mb-3">utilizatori zilnici</div>
+              <div className="text-xs text-muted-foreground">
+                <strong className="text-green-500">$30-150</strong> / zi din ads<br/>
+                <strong className="text-blue-500">$100-500</strong> / lună subscripții<br/>
+                <strong className="text-purple-500">$50-300</strong> / lună affiliate
+              </div>
+            </div>
+
+            <div className="bg-background/50 rounded-xl p-6 text-center">
+              <div className="text-3xl font-bold text-primary mb-2">10,000</div>
+              <div className="text-sm text-muted-foreground mb-3">utilizatori zilnici</div>
+              <div className="text-xs text-muted-foreground">
+                <strong className="text-green-500">$300-1,500</strong> / zi din ads<br/>
+                <strong className="text-blue-500">$1,000-5,000</strong> / lună subscripții<br/>
+                <strong className="text-purple-500">$500-3,000</strong> / lună affiliate
+              </div>
+            </div>
+
+            <div className="bg-background/50 rounded-xl p-6 text-center">
+              <div className="text-3xl font-bold text-primary mb-2">100,000</div>
+              <div className="text-sm text-muted-foreground mb-3">utilizatori zilnici</div>
+              <div className="text-xs text-muted-foreground">
+                <strong className="text-green-500">$3,000-15,000</strong> / zi din ads<br/>
+                <strong className="text-blue-500">$10,000-50,000</strong> / lună subscripții<br/>
+                <strong className="text-purple-500">$5,000-30,000</strong> / lună affiliate
+              </div>
+            </div>
           </div>
 
-          {/* Middle Ad Space */}
-          <div className="my-8">
-            <AdSpace id="middle-ad-1" format="horizontal" />
-          </div>
+          <p className="text-center text-sm text-muted-foreground">
+            * Estimări bazate pe date reale din industrie. Rezultatele pot varia.
+          </p>
+        </div>
 
-          {/* Monetization Tips */}
-          <div className="mt-8 p-6 bg-gradient-primary/10 rounded-xl border border-primary/20">
-            <h4 className="font-semibold text-lg mb-3">💰 Cum să generezi venituri maxime:</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li className="flex items-start gap-2">
-                <span className="text-primary font-bold">1.</span>
-                <span><strong>Google AdSense:</strong> Adaugă codul tău AdSense în componentele AdSpace pentru reclame automate (recomandat pentru trafic mare)</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary font-bold">2.</span>
-                <span><strong>Affiliate Marketing:</strong> Înlocuiește link-urile de mai sus cu propriile tale link-uri affiliate pentru comisioane</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary font-bold">3.</span>
-                <span><strong>Servicii Premium:</strong> Oferă consultanță sau servicii personalizate pentru utilizatorii avansați</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary font-bold">4.</span>
-                <span><strong>Sponsorizări:</strong> Contactează companii de IT/Cybersecurity pentru sponsorizări directe</span>
-              </li>
-            </ul>
+        {/* Implementation Guide */}
+        <div className="bg-card rounded-2xl border border-border p-8">
+          <h3 className="text-2xl font-bold mb-6">🚀 Pași Pentru Implementare</h3>
+          
+          <div className="space-y-4">
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">1</div>
+              <div>
+                <h4 className="font-semibold mb-1">Configurează Google AdSense</h4>
+                <p className="text-sm text-muted-foreground">Creează cont AdSense, obține codul și integrează-l în componentele AdSpace existente</p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">2</div>
+              <div>
+                <h4 className="font-semibold mb-1">Activează Stripe pentru Subscripții</h4>
+                <p className="text-sm text-muted-foreground">Integrează Stripe pentru a oferi planuri premium (mai multe mesaje, răspunsuri prioritare)</p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">3</div>
+              <div>
+                <h4 className="font-semibold mb-1">Alătură-te Programelor Affiliate</h4>
+                <p className="text-sm text-muted-foreground">Înregistrează-te la Amazon Associates, ShareASale, Impact și promovează produse relevante</p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">4</div>
+              <div>
+                <h4 className="font-semibold mb-1">Creează Pachete API</h4>
+                <p className="text-sm text-muted-foreground">Oferă acces API pentru dezvoltatori și companii care vor să integreze AI-ul tău</p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">5</div>
+              <div>
+                <h4 className="font-semibold mb-1">Contactează Sponsori</h4>
+                <p className="text-sm text-muted-foreground">Creează un media kit și contactează companii relevante pentru sponsorizări și partnerships</p>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Bottom Ad Space */}
-        <div className="mt-8">
-          <AdSpace id="bottom-ad-1" format="horizontal" />
+        <div className="mt-12">
+          <AdSpace id="monetization-bottom" format="horizontal" />
         </div>
       </div>
     </section>

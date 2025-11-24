@@ -92,12 +92,23 @@ const Index = () => {
           />
         </aside>
         
-        {/* Main content - Full height chat */}
+        {/* Main content */}
         <main className="flex-1 flex flex-col overflow-hidden">
-          <Hero 
-            conversationId={currentConversationId}
-            onConversationCreated={setCurrentConversationId}
-          />
+          <div className="flex-1 overflow-y-auto">
+            <Hero 
+              conversationId={currentConversationId}
+              onConversationCreated={setCurrentConversationId}
+            />
+            
+            {/* Show content sections only when no conversation is active */}
+            {!currentConversationId && (
+              <>
+                <AdSpace id="after-hero-ad" />
+                <HowItWorks />
+                <Monetization />
+              </>
+            )}
+          </div>
         </main>
       </div>
       <Footer />
