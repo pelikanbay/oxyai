@@ -50,11 +50,18 @@ export default {
       },
       backgroundImage: {
         'gradient-primary': 'var(--gradient-primary)',
+        'gradient-secondary': 'var(--gradient-secondary)',
         'gradient-hero': 'var(--gradient-hero)',
+        'gradient-card': 'var(--gradient-card)',
       },
       boxShadow: {
         'glow': 'var(--shadow-glow)',
+        'glow-accent': 'var(--shadow-glow-accent)',
+        'glow-secondary': 'var(--shadow-glow-secondary)',
         'card': 'var(--shadow-card)',
+      },
+      fontFamily: {
+        'sans': ['Space Grotesk', 'system-ui', '-apple-system', 'sans-serif'],
       },
       transitionTimingFunction: {
         'smooth': 'var(--transition-smooth)',

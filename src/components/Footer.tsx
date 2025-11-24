@@ -2,31 +2,31 @@ import { Heart, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
-  // Linkuri afiliate reale pentru a genera venituri
+  // Linkuri afiliate relevante pentru cybersecurity
   const affiliateLinks = [
     {
       name: "NordVPN",
       description: "VPN securizat - 70% discount",
-      url: "https://go.nordvpn.net/aff_c?offer_id=15&aff_id=YOUR_AFFILIATE_ID", // Înlocuiește YOUR_AFFILIATE_ID cu ID-ul tău de la nordvpn.com/ro/affiliate/
-      category: "🔒 Securitate"
+      url: "https://go.nordvpn.net/aff_c?offer_id=15&aff_id=YOUR_AFFILIATE_ID",
+      category: "🔒 VPN"
     },
     {
-      name: "Udemy",
-      description: "Cursuri IT & Programare",
-      url: "https://www.udemy.com/?ranMID=39197&ranEAID=YOUR_AFFILIATE_ID&ranSiteID=YOUR_SITE_ID", // Înlocuiește IDs de la udemy.com/affiliate/
-      category: "📚 Educație"
+      name: "Udemy Security",
+      description: "Cursuri Pentesting & Hacking",
+      url: "https://www.udemy.com/courses/it-and-software/network-and-security/?ranMID=39197&ranEAID=YOUR_ID",
+      category: "📚 Training"
     },
     {
-      name: "Hostinger",
-      description: "Hosting web ieftin",
-      url: "https://www.hostinger.com?REFERRALCODE=YOUR_CODE", // Înlocuiește YOUR_CODE de la hostinger.com/affiliates
-      category: "🌐 Hosting"
+      name: "Kali Linux Tools",
+      description: "Ghid complet security tools",
+      url: "https://www.amazon.com/s?k=kali+linux+penetration+testing&tag=YOUR_TAG",
+      category: "🛠️ Tools"
     },
     {
-      name: "Amazon",
-      description: "Tech & Cărți IT",
-      url: "https://www.amazon.com/ref=as_li_ss_tl?ie=UTF8&linkCode=ll2&tag=YOUR_TAG&linkId=YOUR_LINK_ID", // Înlocuiește de la affiliate-program.amazon.com
-      category: "🛒 Shopping"
+      name: "HackTheBox",
+      description: "Platformă de practică pentesting",
+      url: "https://www.hackthebox.com/",
+      category: "🎯 Practice"
     }
   ];
 
@@ -36,7 +36,7 @@ const Footer = () => {
         {/* Affiliate Links Section */}
         <div className="mb-8">
           <h3 className="text-sm font-semibold mb-4 text-center text-muted-foreground">
-            🎁 Resurse Recomandate
+            🔐 Resurse Recomandate Cybersecurity
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto">
             {affiliateLinks.map((link, index) => (
@@ -89,7 +89,7 @@ const Footer = () => {
               Termeni
             </Link>
             <a 
-              href="mailto:contact@oxyai.app" 
+              href="mailto:contact@recyeai.com" 
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Contact
@@ -97,7 +97,7 @@ const Footer = () => {
           </nav>
 
           <p className="text-sm text-muted-foreground">
-            © 2024 OxyAI. Toate drepturile rezervate.
+            © 2024 RecyeAI. Toate drepturile rezervate.
           </p>
         </div>
       </div>
