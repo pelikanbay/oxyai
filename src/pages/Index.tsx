@@ -87,10 +87,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground font-['Inter']">
-      <AnalyticsTracker />
-      <CookieConsent />
-      <LegalDisclaimerBanner />
-      <UsageTracker />
+        <AnalyticsTracker />
+        <CookieConsent />
+        <LegalDisclaimerBanner />
       <Header
         onMenuClick={() => setMobileMenuOpen(true)} 
         onLogoClick={handleNewConversation}

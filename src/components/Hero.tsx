@@ -32,7 +32,6 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
   const [isLoading, setIsLoading] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [conversationId, setConversationId] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [showRateLimitRetry, setShowRateLimitRetry] = useState(false);
   const [pendingRequest, setPendingRequest] = useState<any>(null);
@@ -61,28 +60,11 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
     autoSend: true,
   });
 
-  // Usage tracking hook
-  const { canSendMessage, incrementUsage } = useUsageTracking();
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   useEffect(() => {
     if (externalConversationId) {
       setConversationId(externalConversationId);
-      // Only load from DB if not a ghost conversation
-      if (!externalConversationId.startsWith('ghost-')) {
-        loadConversationMessages(externalConversationId);
-      }
+      loadConversationMessages(externalConversationId);
     } else {
       setConversationId(null);
       setMessages([]);
@@ -91,42 +73,17 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
     }
   }, [externalConversationId]);
 
-  // Clear messages when Ghost Mode is disabled
-  useEffect(() => {
-    if (!isGhostMode && conversationId?.startsWith('ghost-')) {
-      setMessages([]);
-      setConversationId(null);
-      toast({
-        title: "Ghost Mode dezactivat",
-        description: "Conversația temporară a fost ștearsă.",
-      });
-    }
-  }, [isGhostMode, conversationId, toast]);
-
-  // Clear ghost messages on unmount
-  useEffect(() => {
-    return () => {
-      if (isGhostMode && conversationId?.startsWith('ghost-')) {
-        // Messages will be automatically cleared when component unmounts
-        console.log('Ghost Mode: Conversație temporară ștearsă');
-      }
-    };
-  }, [isGhostMode, conversationId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const loadConversationMessages = async (convId: string) => {
+  const loadConversationMessages = (convId: string) => {
     try {
-      const { data, error } = await supabase
-        .from("messages")
-        .select("*")
-        .eq("conversation_id", convId)
-        .order("created_at", { ascending: true });
-
-      if (error) throw error;
-      setMessages(data || []);
+      const stored = localStorage.getItem(`conversation_${convId}`);
+      if (stored) {
+        setMessages(JSON.parse(stored));
+      }
     } catch (error) {
       console.error("Error loading messages:", error);
       toast({
@@ -162,52 +119,18 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
 
   const handleGenerate = async () => {
     if (!input.trim() && files.length === 0) return;
-    
-    if (!user) {
-      toast({
-        title: "Eroare",
-        description: "Trebuie să fii autentificat pentru a folosi această funcție",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Check usage limit (skip in Ghost Mode)
-    if (!isGhostMode && !canSendMessage()) {
-      toast({
-        title: "Limită atinsă",
-        description: "Ai atins limita de mesaje pentru acest month. Upgrade la Premium pentru mesaje nelimitate!",
-        variant: "destructive",
-      });
-      return;
-    }
 
     setIsLoading(true);
     
     try {
       let currentConversationId = conversationId;
       
-      // Only create/save conversation if NOT in Ghost Mode
-      if (!isGhostMode) {
-        if (!currentConversationId) {
-          const { data: newConv, error: convError } = await supabase
-            .from("conversations")
-            .insert({ user_id: user.id, title: input.slice(0, 50) })
-            .select()
-            .single();
-
-          if (convError) throw convError;
-          currentConversationId = newConv.id;
-          setConversationId(currentConversationId);
-          if (onConversationCreated) {
-            onConversationCreated(currentConversationId);
-          }
-        }
-      } else {
-        // Ghost Mode: use temporary ID, don't save to DB
-        if (!currentConversationId) {
-          currentConversationId = 'ghost-' + Date.now();
-          setConversationId(currentConversationId);
+      // Create temporary session ID if none exists
+      if (!currentConversationId) {
+        currentConversationId = 'temp-' + Date.now();
+        setConversationId(currentConversationId);
+        if (onConversationCreated) {
+          onConversationCreated(currentConversationId);
         }
       }
 
@@ -231,26 +154,9 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
         created_at: new Date().toISOString()
       };
 
-      // Only save to DB if NOT in Ghost Mode
-      if (!isGhostMode) {
-        const { data: savedUserMsg } = await supabase
-          .from("messages")
-          .insert({
-            conversation_id: currentConversationId,
-            role: userMessage.role,
-            content: userMessage.content,
-            files: userMessage.files,
-          })
-          .select()
-          .single();
-
-        if (savedUserMsg) {
-          setMessages(prev => [...prev, savedUserMsg]);
-        }
-      } else {
-        // Ghost Mode: just add to state
-        setMessages(prev => [...prev, userMessage]);
-      }
+      // Add to local state and storage
+      const updatedMessages = [...messages, userMessage];
+      setMessages(updatedMessages);
 
       setInput("");
       setFiles([]);
