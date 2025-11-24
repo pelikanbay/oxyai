@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { User, LogOut, Menu, Settings, Shield } from "lucide-react";
+import { User, LogOut, Menu, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import recyeaiLogo from "@/assets/recyeai-logo.png";
+import GhostModeIndicator from "@/components/GhostModeIndicator";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,9 +18,11 @@ import { toast } from "sonner";
 interface HeaderProps {
   onMenuClick?: () => void;
   onLogoClick?: () => void;
+  isGhostMode?: boolean;
+  onToggleGhostMode?: () => void;
 }
 
-const Header = ({ onMenuClick, onLogoClick }: HeaderProps) => {
+const Header = ({ onMenuClick, onLogoClick, isGhostMode = false, onToggleGhostMode }: HeaderProps) => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
 
@@ -108,7 +111,13 @@ const Header = ({ onMenuClick, onLogoClick }: HeaderProps) => {
             </div>
           </button>
         </div>
-        <nav className="flex items-center gap-6">
+        <nav className="flex items-center gap-2 md:gap-4">
+          {user && onToggleGhostMode && (
+            <GhostModeIndicator 
+              isGhostMode={isGhostMode} 
+              onToggle={onToggleGhostMode} 
+            />
+          )}
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
