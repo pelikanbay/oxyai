@@ -22,22 +22,38 @@ const Index = () => {
   const [currentConversationId, setCurrentConversationId] = useState<string | undefined>();
 
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log('Auth state changed:', _event, session?.user?.email);
+    // Clear any corrupted auth data on mount
+    const initAuth = async () => {
+      try {
+        // Check for existing session
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Session error:', error);
+          // Clear corrupted session
+          await supabase.auth.signOut();
+          localStorage.clear();
+        }
+        
+        console.log('Initial session:', session?.user?.email || 'none');
+        setSession(session);
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+        localStorage.clear();
+        setSession(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      console.log('Auth event:', _event, session?.user?.email || 'none');
       setSession(session);
       setLoading(false);
     });
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session check:', session?.user?.email);
-      setSession(session);
-      setLoading(false);
-    }).catch((error) => {
-      console.error('Error getting session:', error);
-      setLoading(false);
-    });
+    initAuth();
 
     return () => subscription.unsubscribe();
   }, []);
