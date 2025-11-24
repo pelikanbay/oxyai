@@ -31,23 +31,40 @@ const Header = ({ onMenuClick, onLogoClick }: HeaderProps) => {
   };
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log('Header auth state changed:', _event);
       setUser(session?.user ?? null);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+    }).catch((error) => {
+      console.error('Header: Error getting session:', error);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast.error("Eroare la deconectare");
-    } else {
-      toast.success("Deconectat cu succes!");
+    try {
+      console.log('Attempting logout...');
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Logout error:', error);
+        toast.error(`Eroare la deconectare: ${error.message}`);
+      } else {
+        console.log('Logout successful');
+        toast.success("Deconectat cu succes!");
+        // Clear local storage as backup
+        localStorage.clear();
+        // Force reload to reset state
+        window.location.href = '/';
+      }
+    } catch (error: any) {
+      console.error('Logout exception:', error);
+      toast.error(`Eroare: ${error.message}`);
     }
   };
 

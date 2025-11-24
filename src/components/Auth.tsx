@@ -17,12 +17,15 @@ export const Auth = () => {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        console.log('Attempting login for:', email);
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        console.log('Login successful:', data.user?.email);
         toast.success("Autentificare reușită!");
       } else {
+        console.log('Attempting signup for:', email);
         const redirectUrl = `${window.location.origin}/`;
-        const { error } = await supabase.auth.signUp({ 
+        const { data, error } = await supabase.auth.signUp({ 
           email, 
           password,
           options: {
@@ -30,10 +33,12 @@ export const Auth = () => {
           }
         });
         if (error) throw error;
+        console.log('Signup successful:', data.user?.email);
         toast.success("Cont creat cu succes!");
       }
     } catch (error: any) {
-      toast.error(error.message);
+      console.error('Auth error:', error);
+      toast.error(error.message || "Eroare la autentificare");
     } finally {
       setLoading(false);
     }
