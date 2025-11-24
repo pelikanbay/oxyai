@@ -19,11 +19,18 @@ export const Auth = () => {
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        toast.success("Successfully logged in!");
+        toast.success("Autentificare reușită!");
       } else {
-        const { error } = await supabase.auth.signUp({ email, password });
+        const redirectUrl = `${window.location.origin}/`;
+        const { error } = await supabase.auth.signUp({ 
+          email, 
+          password,
+          options: {
+            emailRedirectTo: redirectUrl
+          }
+        });
         if (error) throw error;
-        toast.success("Account created successfully!");
+        toast.success("Cont creat cu succes!");
       }
     } catch (error: any) {
       toast.error(error.message);
@@ -36,9 +43,9 @@ export const Auth = () => {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>{isLogin ? "Login" : "Sign Up"}</CardTitle>
+          <CardTitle>{isLogin ? "Autentificare" : "Creare Cont"}</CardTitle>
           <CardDescription>
-            {isLogin ? "Welcome back! Please login to continue." : "Create an account to get started."}
+            {isLogin ? "Bine ai revenit! Autentifică-te pentru a continua." : "Creează un cont pentru a începe."}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -62,7 +69,7 @@ export const Auth = () => {
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Loading..." : isLogin ? "Login" : "Sign Up"}
+              {loading ? "Se încarcă..." : isLogin ? "Autentificare" : "Creare Cont"}
             </Button>
             <Button
               type="button"
@@ -70,7 +77,7 @@ export const Auth = () => {
               className="w-full"
               onClick={() => setIsLogin(!isLogin)}
             >
-              {isLogin ? "Need an account? Sign up" : "Already have an account? Login"}
+              {isLogin ? "Nu ai cont? Înregistrează-te" : "Ai deja cont? Autentifică-te"}
             </Button>
           </form>
         </CardContent>
