@@ -10,17 +10,17 @@ serve(async (req) => {
 
   try {
     const { message, files, model, temperature } = await req.json();
-    const OPENROUTER_API_KEY = Deno.env.get("OPENROUTER_API_KEY");
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
-    if (!OPENROUTER_API_KEY) {
-      throw new Error("OPENROUTER_API_KEY is not configured");
+    if (!LOVABLE_API_KEY) {
+      throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Use defaults if not provided - OPTIMIZED FOR SPEED
-    const selectedModel = model || "deepseek/deepseek-r1-0528-qwen3-8b:free";
+    // Use Lovable AI with Gemini 2.5 Flash (faster, no rate limits)
+    const selectedModel = "google/gemini-2.5-flash";
     const selectedTemperature = temperature ?? 0.7;
 
-    console.log("Processing request:", {
+    console.log("Processing request with Lovable AI:", {
       model: selectedModel,
       temperature: selectedTemperature,
       hasMessage: !!message,
@@ -53,14 +53,12 @@ serve(async (req) => {
       }
     }
 
-    // Optimized API call with streaming
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    // Lovable AI Gateway - Fast & No Rate Limits
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://recyeai.com",
-        "X-Title": "RecyeAI",
       },
       body: JSON.stringify({
         model: selectedModel,
@@ -100,26 +98,25 @@ Răspunde în limba română. You communicate in a professional, technical tone 
 
     if (!response.ok) {
       if (response.status === 429) {
-        const retryAfter = response.headers.get('retry-after') || '60';
-        console.error("Rate limit hit, retry after:", retryAfter);
+        console.error("Lovable AI rate limit hit (rare)");
         return new Response(
           JSON.stringify({ 
-            error: "Prea multe cereri. Te rog așteaptă 30-60 secunde și încearcă din nou.",
-            retryAfter: parseInt(retryAfter)
+            error: "Limită temporară atinsă. Te rog încearcă din nou în câteva secunde.",
+            retryAfter: 5
           }), 
           {
             status: 429,
             headers: { 
               ...corsHeaders, 
               "Content-Type": "application/json",
-              "Retry-After": retryAfter
+              "Retry-After": "5"
             },
           }
         );
       }
       if (response.status === 402) {
         return new Response(
-          JSON.stringify({ error: "Credite insuficiente. Te rog contactează administratorul." }), 
+          JSON.stringify({ error: "Credite Lovable AI epuizate. Adaugă credite în Settings → Cloud → Usage." }), 
           {
             status: 402,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -128,7 +125,7 @@ Răspunde în limba română. You communicate in a professional, technical tone 
       }
       
       const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
+      console.error("Lovable AI error:", response.status, errorText);
       return new Response(
         JSON.stringify({ error: "Eroare la generarea răspunsului AI" }), 
         {

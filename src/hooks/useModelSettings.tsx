@@ -13,64 +13,44 @@ export interface AIModel {
 
 export const FREE_MODELS: AIModel[] = [
   {
-    id: 'deepseek/deepseek-r1-0528-qwen3-8b:free',
-    name: 'DeepSeek R1 Qwen3 8B',
-    provider: 'DeepSeek',
-    description: 'Fast reasoning model, optimizat pentru coding și analytical tasks',
-    capabilities: ['Coding', 'Analysis', 'Reasoning', 'Pentesting'],
-    contextWindow: '8K tokens',
+    id: 'google/gemini-2.5-flash',
+    name: 'Gemini 2.5 Flash ⚡',
+    provider: 'Lovable AI',
+    description: 'Rapid și puternic - recomandat (FĂRĂ rate limits)',
+    capabilities: ['Multimodal', 'Vision', 'Fast', 'Pentesting'],
+    contextWindow: '1M tokens',
     speed: 'fast',
-    costPerRequest: 'FREE'
+    costPerRequest: 'Included'
   },
   {
-    id: 'qwen/qwen-2.5-7b-instruct:free',
-    name: 'Qwen 2.5 7B Instruct',
-    provider: 'Alibaba',
-    description: 'Model versatil pentru general purpose tasks și coding',
-    capabilities: ['General', 'Coding', 'Multilingual'],
-    contextWindow: '32K tokens',
+    id: 'google/gemini-2.5-pro',
+    name: 'Gemini 2.5 Pro 🧠',
+    provider: 'Lovable AI',
+    description: 'Cel mai puternic - reasoning complex (FĂRĂ rate limits)',
+    capabilities: ['Advanced Reasoning', 'Multimodal', 'Vision', 'Pentesting'],
+    contextWindow: '1M tokens',
     speed: 'fast',
-    costPerRequest: 'FREE'
+    costPerRequest: 'Included'
   },
   {
-    id: 'meta-llama/llama-3.2-3b-instruct:free',
-    name: 'Llama 3.2 3B Instruct',
-    provider: 'Meta',
-    description: 'Compact model pentru conversații și task-uri simple',
-    capabilities: ['Conversation', 'General', 'Fast'],
+    id: 'openai/gpt-5-mini',
+    name: 'GPT-5 Mini',
+    provider: 'Lovable AI',
+    description: 'OpenAI - echilibrat performanță/viteză (FĂRĂ rate limits)',
+    capabilities: ['Multimodal', 'Vision', 'Coding', 'Analysis'],
     contextWindow: '128K tokens',
     speed: 'fast',
-    costPerRequest: 'FREE'
+    costPerRequest: 'Included'
   },
   {
-    id: 'microsoft/phi-3-mini-128k-instruct:free',
-    name: 'Phi-3 Mini 128K',
-    provider: 'Microsoft',
-    description: 'Small language model cu context window mare',
-    capabilities: ['Coding', 'Math', 'Reasoning'],
+    id: 'openai/gpt-5',
+    name: 'GPT-5',
+    provider: 'Lovable AI',
+    description: 'OpenAI - cel mai avansat model (FĂRĂ rate limits)',
+    capabilities: ['Advanced', 'Multimodal', 'Vision', 'Complex Tasks'],
     contextWindow: '128K tokens',
-    speed: 'fast',
-    costPerRequest: 'FREE'
-  },
-  {
-    id: 'mistralai/mistral-7b-instruct:free',
-    name: 'Mistral 7B Instruct',
-    provider: 'Mistral AI',
-    description: 'Efficient model pentru conversații și general tasks',
-    capabilities: ['General', 'Conversation', 'Coding'],
-    contextWindow: '32K tokens',
     speed: 'medium',
-    costPerRequest: 'FREE'
-  },
-  {
-    id: 'google/gemma-2-9b-it:free',
-    name: 'Gemma 2 9B IT',
-    provider: 'Google',
-    description: 'Open model de la Google pentru diverse task-uri',
-    capabilities: ['General', 'Safety', 'Reasoning'],
-    contextWindow: '8K tokens',
-    speed: 'medium',
-    costPerRequest: 'FREE'
+    costPerRequest: 'Premium'
   }
 ];
 
