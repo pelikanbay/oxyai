@@ -5,8 +5,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Upload, X, Send, Image as ImageIcon, Mic, MicOff, Volume2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useVoiceMode } from "@/hooks/useVoiceMode";
+import { useModelSettings } from "@/hooks/useModelSettings";
 import ChatMessage from "./ChatMessage";
 import VoiceIndicator from "./VoiceIndicator";
+import ModelSelector from "./ModelSelector";
 
 interface Message {
   id: string;
@@ -33,6 +35,9 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Model settings
+  const { selectedModel, temperature } = useModelSettings();
 
   // Voice mode hook
   const {
@@ -249,7 +254,9 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
         },
         body: JSON.stringify({ 
           message: input,
-          files: filesData 
+          files: filesData,
+          model: selectedModel,
+          temperature: temperature
         }),
       });
 
@@ -368,6 +375,11 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
     <div className="flex flex-col h-full max-h-[calc(100vh-8rem)]">
       {/* Voice Mode Indicator */}
       <VoiceIndicator isListening={isListening} isSpeaking={isSpeaking} />
+      
+      {/* Model Selector Bar */}
+      <div className="px-4 md:px-6 py-2 border-b border-border bg-card/30 backdrop-blur-sm">
+        <ModelSelector />
+      </div>
       
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto px-4 md:px-6 py-4 space-y-4">
