@@ -36,7 +36,7 @@ export const useUserRole = () => {
         .eq("user_id", session.user.id)
         .order("created_at", { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle(); // Use maybeSingle() instead of single() to handle 0 results
 
       if (error) {
         console.error("Error fetching user role:", error);
