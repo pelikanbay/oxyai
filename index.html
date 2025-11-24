@@ -26,28 +26,57 @@
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
     
     <!-- 
-      MONETIZARE - INSTRUCȚIUNI:
+      MONETIZARE & GDPR - INSTRUCȚIUNI COMPLETE:
       
-      1. GOOGLE ADSENSE (Recomandat):
-         - Înregistrează-te: https://www.google.com/adsense
-         - Obține Publisher ID (ca-pub-XXXXXXXXXXXXX)
-         - Decomentează linia 38-40 și înlocuiește ca-pub-XXXXXXXXXXXXX
-         - Venituri estimate: $1-5 per 1000 vizite
-      
-      2. GOOGLE ANALYTICS:
-         - Creează cont: https://analytics.google.com
-         - Obține GA4 ID (G-XXXXXXXXXX)
-         - Decomentează liniile 29-35 și înlocuiește G-XXXXXXXXXX
+      1. GOOGLE ANALYTICS (GA4) - RECOMANDAT:
+         ✅ Creează cont: https://analytics.google.com
+         ✅ Obține GA4 ID (format: G-XXXXXXXXXX)
+         ✅ Decomentează liniile 46-58 și înlocuiește G-XXXXXXXXXX
+         ✅ Cookie Consent gestionează consimțământul automat
+         📊 Beneficii: Înțelegi utilizatorii, optimizezi platformă, free forever
+         
+      2. GOOGLE ADSENSE - MONETIZARE PUBLICITARĂ:
+         💰 Înregistrează-te: https://www.google.com/adsense
+         💰 Obține Publisher ID (format: ca-pub-XXXXXXXXXXXXX)
+         💰 Decomentează liniile 61-63 și înlocuiește ca-pub-XXXXXXXXXXXXX
+         💰 Venituri estimate: $1-10 per 1000 vizite (depinde de nișă)
+         💰 Pentru cybersecurity: CPM poate fi $5-15 (nișă high-value)
+         
+      3. GDPR COMPLIANCE:
+         ✅ Cookie Consent este ACTIVAT automat
+         ✅ Banner apare la prima vizită
+         ✅ Utilizatorii aleg preferințe cookie-uri
+         ✅ Gestionare automată consimțământ Analytics & AdSense
+         ✅ Pagini legale complete: /privacy, /terms, /cookies, /dpa
+         
+      4. ALTERNATIVA ANALYTICS (Dacă vrei self-hosted):
+         - Plausible Analytics: https://plausible.io (GDPR-friendly, fără cookie-uri)
+         - Umami: https://umami.is (open-source, self-hosted)
+         - Simple Analytics: https://simpleanalytics.com
     -->
     
-    <!-- Google Analytics - Decomentează și înlocuiește G-XXXXXXXXXX -->
+    <!-- Google Analytics (GA4) - Decomentează și înlocuiește G-XXXXXXXXXX -->
     <!--
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
     <script>
+      // GDPR Consent Management
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      
+      // Default: Deny until user consents
+      gtag('consent', 'default', {
+        'analytics_storage': 'denied',
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied'
+      });
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
       gtag('js', new Date());
-      gtag('config', 'G-XXXXXXXXXX');
+      gtag('config', 'G-XXXXXXXXXX', {
+        'anonymize_ip': true,
+        'cookie_flags': 'SameSite=None;Secure'
+      });
     </script>
     -->
     

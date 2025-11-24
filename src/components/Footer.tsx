@@ -88,6 +88,18 @@ const Footer = () => {
             >
               Termeni
             </Link>
+            <Link 
+              to="/cookies" 
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Cookie-uri
+            </Link>
+            <Link 
+              to="/dpa" 
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              DPA
+            </Link>
             <a 
               href="mailto:contact@recyeai.com" 
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
