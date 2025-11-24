@@ -60,7 +60,10 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground font-['Inter']">
       <AnalyticsTracker />
       <UsageTracker />
-      <Header onMenuClick={() => setMobileMenuOpen(true)} />
+      <Header 
+        onMenuClick={() => setMobileMenuOpen(true)} 
+        onLogoClick={handleNewConversation}
+      />
       
       {/* Mobile Drawer */}
       <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
