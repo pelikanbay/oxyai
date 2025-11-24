@@ -276,6 +276,20 @@ const Hero = ({ conversationId: externalConversationId, onConversationCreated, i
 
       if (!resp.ok) {
         const errorData = await resp.json();
+        
+        // Handle rate limit with helpful message
+        if (resp.status === 429) {
+          toast({
+            title: "Rate Limit",
+            description: errorData.error || "Prea multe cereri. Te rog așteaptă 30-60 secunde.",
+            variant: "destructive",
+            duration: 5000,
+          });
+          setMessages(prev => prev.filter(msg => !msg.id.startsWith('temp-')));
+          setIsLoading(false);
+          return;
+        }
+        
         throw new Error(errorData.error || "Eroare la generarea răspunsului");
       }
 
