@@ -6,6 +6,31 @@ const Privacy = () => {
     <div className="min-h-screen bg-gradient-hero">
       <Header />
       <main className="container mx-auto px-4 py-16 max-w-4xl">
+        {/* LEGAL WARNING FOR MINORS */}
+        <div className="bg-destructive/10 border-2 border-destructive/30 rounded-lg p-6 mb-8">
+          <h2 className="text-xl font-bold text-destructive mb-3 flex items-center gap-2">
+            ⚠️ Important Legal Notice
+          </h2>
+          <p className="text-sm text-foreground mb-4">
+            <strong>Operator Status:</strong> Această platformă este operată de o persoană fizică sub 18 ani, 
+            în regim de dezvoltare și testare. Operatorul lucrează activ la înființarea unei entități legale 
+            conforme (PFA sau SRL) pentru a asigura protecția juridică completă.
+          </p>
+          <div className="bg-background/50 rounded p-4 text-sm space-y-2">
+            <p className="font-semibold text-foreground">Până la finalizarea setup-ului legal:</p>
+            <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+              <li>Platformă în regim BETA - utilizare la propriul risc</li>
+              <li>Ghost Mode recomandat pentru confidențialitate maximă</li>
+              <li>Nu introduceți date sensibile, financiare sau medicale</li>
+              <li>Reprezentant legal (părinte/tutore): contact@recyeai.com</li>
+            </ul>
+          </div>
+          <p className="text-xs text-muted-foreground mt-4">
+            Prin folosirea platformei, confirmi că înțelegi această situație. Pentru întrebări despre 
+            protecția datelor, contactează reprezentantul legal la adresa de mai sus.
+          </p>
+        </div>
+
         <h1 className="text-4xl font-bold mb-8 bg-gradient-primary bg-clip-text text-transparent">
           Politică de Confidențialitate
         </h1>
@@ -106,12 +131,22 @@ const Privacy = () => {
 
           <section>
             <h2 className="text-2xl font-semibold text-foreground mb-4">9. Contact</h2>
-            <p>
-              Pentru întrebări despre această politică de confidențialitate, contactează-ne la:{" "}
-              <a href="mailto:contact@recyeai.com" className="text-primary hover:underline">
-                contact@recyeai.com
-              </a>
-            </p>
+            <div className="bg-background/30 rounded-lg p-4 border border-border/30 space-y-3">
+              <p>
+                <strong className="text-foreground">Operator Date:</strong> RecyeAI (în proces de înființare entitate legală)
+              </p>
+              <p>
+                <strong className="text-foreground">Reprezentant Legal (Tutore):</strong><br />
+                Email: <a href="mailto:contact@recyeai.com" className="text-primary hover:underline">
+                  contact@recyeai.com
+                </a>
+              </p>
+              <p className="text-sm text-muted-foreground">
+                ⚠️ <strong>Notă:</strong> Operatorul este minor (sub 18 ani). Toate cererile GDPR și problemele 
+                legale vor fi gestionate de reprezentantul legal desemnat (părinte/tutore). Lucrăm activ 
+                la înființarea unei entități legale (PFA/SRL) pentru conformitate completă.
+              </p>
+            </div>
           </section>
 
           <p className="text-sm text-muted-foreground mt-8">

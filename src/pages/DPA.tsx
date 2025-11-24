@@ -6,6 +6,58 @@ const DPA = () => {
     <div className="min-h-screen bg-gradient-hero">
       <Header />
       <main className="container mx-auto px-4 py-16 max-w-4xl">
+        {/* CRITICAL LEGAL WARNING */}
+        <div className="bg-destructive/10 border-2 border-destructive/30 rounded-lg p-6 mb-8">
+          <h2 className="text-xl font-bold text-destructive mb-3 flex items-center gap-2">
+            🚨 Critical Legal Disclosure
+          </h2>
+          <div className="space-y-4">
+            <div className="bg-background/50 rounded p-4">
+              <p className="text-sm text-foreground font-semibold mb-2">
+                ⚖️ Data Controller Status:
+              </p>
+              <p className="text-sm text-muted-foreground">
+                RecyeAI este operat de o persoană fizică <strong>sub 18 ani</strong>. Conform GDPR, 
+                minorii nu pot acționa legal ca Data Controllers independenți. 
+              </p>
+            </div>
+            
+            <div className="bg-background/50 rounded p-4">
+              <p className="text-sm text-foreground font-semibold mb-2">
+                👤 Reprezentant Legal Desemnat:
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Toate responsabilitățile GDPR sunt gestionate de reprezentantul legal (părinte/tutore):<br />
+                <strong className="text-foreground">Email:</strong> <a href="mailto:contact@recyeai.com" className="text-primary hover:underline">contact@recyeai.com</a><br />
+                Reprezentantul legal răspunde pentru toate cererile GDPR, incidente de securitate și obligații legale.
+              </p>
+            </div>
+
+            <div className="bg-background/50 rounded p-4">
+              <p className="text-sm text-foreground font-semibold mb-2">
+                🏢 Status Entitate Juridică:
+              </p>
+              <p className="text-sm text-muted-foreground">
+                În proces de înființare <strong>SRL (Societate cu Răspundere Limitată)</strong> 
+                sau <strong>PFA (Persoană Fizică Autorizată)</strong> pentru conformitate legală completă. 
+                Până la finalizare, platforma funcționează în regim BETA cu limitări de utilizatori și date colectate.
+              </p>
+            </div>
+
+            <div className="bg-destructive/5 border border-destructive/20 rounded p-4">
+              <p className="text-sm font-semibold text-destructive mb-2">
+                ⚠️ RECOMANDARE PENTRU UTILIZATORI:
+              </p>
+              <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-5">
+                <li>Folosiți <strong>Ghost Mode</strong> pentru conversații temporare fără stocare</li>
+                <li>NU introduceți date sensibile, financiare, medicale sau confidențiale</li>
+                <li>Înțelegeți că operatorul lucrează la conformitate juridică completă</li>
+                <li>Utilizați platforma la propriul risc în regim de testare</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
         <h1 className="text-4xl font-bold mb-8 bg-gradient-primary bg-clip-text text-transparent">
           Acord de Prelucrare a Datelor (DPA)
         </h1>
