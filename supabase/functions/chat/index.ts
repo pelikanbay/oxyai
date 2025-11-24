@@ -19,10 +19,31 @@ serve(async (req) => {
     console.log("Received message:", message);
     console.log("Received files:", files?.length || 0);
 
-    let userMessage = message;
+    // Construct user message content with proper multimodal support
+    let userContent: any = [];
+    
+    if (message && message.trim()) {
+      userContent.push({ type: "text", text: message });
+    }
+    
     if (files && files.length > 0) {
-      const filesList = files.map((f: any) => `- ${f.name} (${f.type}, ${(f.size / 1024).toFixed(2)} KB)`).join('\n');
-      userMessage += `\n\nFișiere atașate:\n${filesList}\n\nConținutul fișierelor (base64): ${JSON.stringify(files.map((f: any) => ({ name: f.name, content: f.content.substring(0, 100) + '...' })))}`;
+      for (const file of files) {
+        // Check if it's an image
+        if (file.type && file.type.startsWith('image/')) {
+          userContent.push({
+            type: "image_url",
+            image_url: {
+              url: `data:${file.type};base64,${file.content}`
+            }
+          });
+        } else {
+          // For non-image files, include metadata
+          userContent.push({
+            type: "text",
+            text: `\n\nFișier atașat: ${file.name} (${file.type}, ${(file.size / 1024).toFixed(2)} KB)`
+          });
+        }
+      }
     }
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -38,9 +59,9 @@ serve(async (req) => {
         messages: [
           { 
             role: "system", 
-            content: "Ești OxyAI, un asistent AI specializat în IT și cybersecurity. Oferă răspunsuri clare, practice și detaliate în limba română. Concentrează-te pe soluții concrete și best practices din industrie. Când ești întrebat cine te-a creat sau cine te-a făcut, răspunde: 'Am fost creat de Kent.' Când primești fișiere, analizează-le și oferă informații relevante despre conținutul lor." 
+            content: "Ești OxyAI, un asistent AI specializat în IT și cybersecurity. Oferă răspunsuri clare, practice și detaliate în limba română. Concentrează-te pe soluții concrete și best practices din industrie. Când ești întrebat cine te-a creat sau cine te-a făcut, răspunde: 'Am fost creat de Kent.' Când primești imagini, descrie în detaliu ce vezi în ele. Analizează conținutul vizual și oferă informații relevante despre ceea ce observi în imagine." 
           },
-          { role: "user", content: userMessage },
+          { role: "user", content: userContent },
         ],
         stream: true,
       }),
